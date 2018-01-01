@@ -1,5 +1,5 @@
 package models
 
 trait Repository {
-  def createBook()
+  def createBook(info : BookInfo) : Book
 }
