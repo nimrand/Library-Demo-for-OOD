@@ -37,13 +37,17 @@ Seq[Any](format.raw/*7.32*/("""
         """),format.raw/*13.9*/("""<title>"""),_display_(/*13.17*/title),format.raw/*13.22*/("""</title>
         <link rel="stylesheet" media="screen" href=""""),_display_(/*14.54*/routes/*14.60*/.Assets.versioned("stylesheets/main.css")),format.raw/*14.101*/("""">
         <link rel="shortcut icon" type="image/png" href=""""),_display_(/*15.59*/routes/*15.65*/.Assets.versioned("images/favicon.png")),format.raw/*15.104*/("""">
-
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
     <body>
-        """),format.raw/*20.32*/("""
-        """),_display_(/*21.10*/content),format.raw/*21.17*/("""
-
-      """),format.raw/*23.7*/("""<script src=""""),_display_(/*23.21*/routes/*23.27*/.Assets.versioned("javascripts/main.js")),format.raw/*23.67*/("""" type="text/javascript"></script>
+    		<div class="container-fluid">
+    		
+        """),format.raw/*24.32*/("""
+        """),_display_(/*25.10*/content),format.raw/*25.17*/("""
+		"""),format.raw/*26.3*/("""</div>
+      <script src=""""),_display_(/*27.21*/routes/*27.27*/.Assets.versioned("javascripts/main.js")),format.raw/*27.67*/("""" type="text/javascript"></script>
     </body>
 </html>
 """))
@@ -62,11 +66,11 @@ Seq[Any](format.raw/*7.32*/("""
 
               /*
                   -- GENERATED --
-                  DATE: Sat Nov 18 23:08:13 KST 2017
-                  SOURCE: /Users/kpyancey/Projects/library/app/views/main.scala.html
-                  HASH: 52352176f1a784d96e62964e439264b508b87d6f
-                  MATRIX: 987->260|1112->290|1140->292|1220->397|1256->406|1291->414|1317->419|1406->481|1421->487|1484->528|1572->589|1587->595|1648->634|1711->759|1748->769|1776->776|1811->784|1852->798|1867->804|1928->844
-                  LINES: 26->7|31->7|33->9|36->12|37->13|37->13|37->13|38->14|38->14|38->14|39->15|39->15|39->15|43->20|44->21|44->21|46->23|46->23|46->23|46->23
+                  DATE: Sun Jan 07 14:01:44 KST 2018
+                  SOURCE: /Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/main.scala.html
+                  HASH: 9bee3669288785c9c672e8bfd72e496156965fad
+                  MATRIX: 987->260|1112->290|1140->292|1220->397|1256->406|1291->414|1317->419|1406->481|1421->487|1484->528|1572->589|1587->595|1648->634|2041->1089|2078->1099|2106->1106|2136->1109|2190->1136|2205->1142|2266->1182
+                  LINES: 26->7|31->7|33->9|36->12|37->13|37->13|37->13|38->14|38->14|38->14|39->15|39->15|39->15|47->24|48->25|48->25|49->26|50->27|50->27|50->27
                   -- GENERATED --
               */
           

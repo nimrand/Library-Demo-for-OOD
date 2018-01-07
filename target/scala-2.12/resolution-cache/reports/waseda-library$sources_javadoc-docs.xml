@@ -7,7 +7,7 @@
 		revision="1.0-SNAPSHOT"
 		conf="docs"
 		confs="compile, runtime, test, provided, optional, universal, universal-docs, universal-src, windows, docker, linux, rpm, debian, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool, docs"
-		date="20171118231013"/>
+		date="20180107145702"/>
 	<dependencies>
 		<module organisation="com.typesafe.play" name="play-omnidoc_2.12">
 			<revision name="2.6.7" status="release" pubdate="20171102113511" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/playframework/omnidoc" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="27">
@@ -132,7 +132,7 @@
 		<module organisation="javax.inject" name="javax.inject">
 			<revision name="1" status="release" pubdate="20091014083500" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://code.google.com/p/atinject/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="49">
 				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
-				<metadata-artifact status="no" details="" size="2380" time="0" location="/Users/kpyancey/.ivy2/cache/javax.inject/javax.inject/ivy-1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/javax/inject/javax.inject/1/javax.inject-1.pom"/>
+				<metadata-artifact status="no" details="" size="2506" time="0" location="/Users/kpyancey/.ivy2/cache/javax.inject/javax.inject/ivy-1.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/javax/inject/javax.inject/1/javax.inject-1.pom"/>
 				<caller organisation="waseda" name="library$sources_javadoc" conf="docs" rev="1" rev-constraint-default="1" rev-constraint-dynamic="1" callerrev="1.0-SNAPSHOT"/>
 				<artifacts>
 					<artifact name="javax.inject" type="doc" ext="jar" extra-classifier="javadoc" status="no" details="" size="32609" time="0" location="/Users/kpyancey/.ivy2/cache/javax.inject/javax.inject/docs/javax.inject-1-javadoc.jar">
@@ -146,7 +146,7 @@
 		</module>
 		<module organisation="javax.transaction" name="jta">
 			<revision name="1.1" status="release" pubdate="20081027192721" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://java.sun.com/products/jta" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="38">
-				<metadata-artifact status="no" details="" size="2343" time="0" location="/Users/kpyancey/.ivy2/cache/javax.transaction/jta/ivy-1.1.xml" searched="false" origin-is-local="false" origin-location="file:/Users/kpyancey/Downloads/activator-1.0.10/repository/javax.transaction/jta/1.1/ivys/ivy.xml"/>
+				<metadata-artifact status="no" details="" size="2343" time="0" location="/Users/kpyancey/.ivy2/cache/javax.transaction/jta/ivy-1.1.xml" searched="false" origin-is-local="false" origin-location="file:/Users/kpyancey/Documents/activator-1.0.10/repository/javax.transaction/jta/1.1/ivys/ivy.xml"/>
 				<caller organisation="waseda" name="library$sources_javadoc" conf="docs" rev="1.1" rev-constraint-default="1.1" rev-constraint-dynamic="1.1" callerrev="1.0-SNAPSHOT"/>
 				<artifacts>
 					<artifact name="jta" type="src" ext="jar" extra-classifier="sources" status="no" details="" size="25014" time="0" location="/Users/kpyancey/.ivy2/cache/javax.transaction/jta/srcs/jta-1.1-sources.jar">
@@ -202,7 +202,8 @@
 		</module>
 		<module organisation="commons-codec" name="commons-codec">
 			<revision name="1.10" status="release" pubdate="20141106231535" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://commons.apache.org/proper/commons-codec/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="35">
-				<metadata-artifact status="no" details="" size="10380" time="0" location="/Users/kpyancey/.ivy2/cache/commons-codec/commons-codec/ivy-1.10.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.pom"/>
+				<license name="Apache License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
+				<metadata-artifact status="no" details="" size="10608" time="0" location="/Users/kpyancey/.ivy2/cache/commons-codec/commons-codec/ivy-1.10.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/commons-codec/commons-codec/1.10/commons-codec-1.10.pom"/>
 				<caller organisation="waseda" name="library$sources_javadoc" conf="docs" rev="1.10" rev-constraint-default="1.10" rev-constraint-dynamic="1.10" callerrev="1.0-SNAPSHOT"/>
 				<artifacts>
 					<artifact name="commons-codec" type="doc" ext="jar" extra-classifier="javadoc" status="no" details="" size="433991" time="0" location="/Users/kpyancey/.ivy2/cache/commons-codec/commons-codec/docs/commons-codec-1.10-javadoc.jar">
@@ -680,9 +681,9 @@
 			</revision>
 		</module>
 		<module organisation="org.scala-lang" name="scala-reflect">
-			<revision name="2.12.3" status="release" pubdate="20170725064444" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.3/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="4">
+			<revision name="2.12.3" status="release" pubdate="20170725194444" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.3/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="4">
 				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
-				<metadata-artifact status="no" details="" size="2812" time="0" location="/Users/kpyancey/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.12.3.xml" searched="false" origin-is-local="false" origin-location="file:////Users/kpyancey/.sbt/preloaded/org.scala-lang/scala-reflect/2.12.3/ivys/ivy.xml"/>
+				<metadata-artifact status="no" details="" size="2637" time="0" location="/Users/kpyancey/.ivy2/cache/org.scala-lang/scala-reflect/ivy-2.12.3.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-reflect/2.12.3/scala-reflect-2.12.3.pom"/>
 				<caller organisation="waseda" name="library$sources_javadoc" conf="docs" rev="2.12.3" rev-constraint-default="2.12.3" rev-constraint-dynamic="2.12.3" callerrev="1.0-SNAPSHOT" extra-info.apiURL="http://www.scala-lang.org/api/2.12.3/"/>
 				<artifacts>
 					<artifact name="scala-reflect" type="doc" ext="jar" extra-classifier="javadoc" status="no" details="" size="5813700" time="0" location="/Users/kpyancey/.ivy2/cache/org.scala-lang/scala-reflect/docs/scala-reflect-2.12.3-javadoc.jar">
@@ -740,7 +741,7 @@
 			</revision>
 		</module>
 		<module organisation="org.scala-lang" name="scala-library">
-			<revision name="2.12.3" status="release" pubdate="20170725194730" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.3/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="18">
+			<revision name="2.12.3" status="release" pubdate="20170725194730" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.scala-lang.org/" extra-info.apiURL="http://www.scala-lang.org/api/2.12.3/" downloaded="false" searched="false" default="false" conf="master(*), compile, runtime(*), master(compile), runtime, compile(*), master" position="18">
 				<license name="BSD 3-Clause" url="http://www.scala-lang.org/license.html"/>
 				<metadata-artifact status="no" details="" size="2471" time="0" location="/Users/kpyancey/.ivy2/cache/org.scala-lang/scala-library/ivy-2.12.3.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/scala-lang/scala-library/2.12.3/scala-library-2.12.3.pom"/>
 				<caller organisation="waseda" name="library$sources_javadoc" conf="docs" rev="2.12.3" rev-constraint-default="2.12.3" rev-constraint-dynamic="2.12.3" callerrev="1.0-SNAPSHOT" extra-info.apiURL="http://www.scala-lang.org/api/2.12.3/"/>

@@ -4,7 +4,7 @@
 		module="library_2.12"
 		revision="1.0-SNAPSHOT"
 		status="integration"
-		publication="20171118230812"
+		publication="20180107153136"
 	>
 		<description>
 		library
@@ -50,5 +50,11 @@
 		<dependency org="com.typesafe.play" name="play-akka-http-server_2.12" rev="2.6.7" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.play" name="play-guice_2.12" rev="2.6.7" conf="compile->default(compile)"/>
 		<dependency org="org.scalatestplus.play" name="scalatestplus-play_2.12" rev="3.1.2" conf="test->default(compile)"/>
+		<dependency org="javax.xml.bind" name="jaxb-api" rev="2.1" conf="compile->default(compile)"/>
+		<dependency org="com.adrianhurt" name="play-bootstrap_2.12" rev="1.2-P26-B3" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-slick_2.12" rev="3.0.0" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe.play" name="play-slick-evolutions_2.12" rev="3.0.0" conf="compile->default(compile)"/>
+		<dependency org="com.h2database" name="h2" rev="1.4.196" conf="compile->default(compile)"/>
+		<dependency org="org.xerial" name="sqlite-jdbc" rev="3.21.0" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>

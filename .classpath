@@ -233,6 +233,59 @@
       <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.google.inject.extensions/guice-assistedinject/docs/guice-assistedinject-4.1.0-javadoc.jar!/"/>
     </attributes>
   </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/javax.xml.bind/jaxb-api/srcs/jaxb-api-2.1-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/javax.xml.bind/jaxb-api/jars/jaxb-api-2.1.jar"/>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/javax.xml.stream/stax-api/srcs/stax-api-1.0-2-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/javax.xml.stream/stax-api/jars/stax-api-1.0-2.jar"/>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/javax.activation/activation/srcs/activation-1.1-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/javax.activation/activation/jars/activation-1.1.jar"/>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.adrianhurt/play-bootstrap_2.12/srcs/play-bootstrap_2.12-1.2-P26-B3-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.adrianhurt/play-bootstrap_2.12/jars/play-bootstrap_2.12-1.2-P26-B3.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.adrianhurt/play-bootstrap_2.12/docs/play-bootstrap_2.12-1.2-P26-B3-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.adrianhurt/play-bootstrap-core_2.12/srcs/play-bootstrap-core_2.12-1.2-P26-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.adrianhurt/play-bootstrap-core_2.12/jars/play-bootstrap-core_2.12-1.2-P26.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.adrianhurt/play-bootstrap-core_2.12/docs/play-bootstrap-core_2.12-1.2-P26-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-slick_2.12/srcs/play-slick_2.12-3.0.0-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-slick_2.12/jars/play-slick_2.12-3.0.0.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-slick_2.12/docs/play-slick_2.12-3.0.0-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.typesafe.slick/slick_2.12/srcs/slick_2.12-3.2.0-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.typesafe.slick/slick_2.12/bundles/slick_2.12-3.2.0.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.typesafe.slick/slick_2.12/docs/slick_2.12-3.2.0-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.typesafe.slick/slick-hikaricp_2.12/srcs/slick-hikaricp_2.12-3.2.0-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.typesafe.slick/slick-hikaricp_2.12/bundles/slick-hikaricp_2.12-3.2.0.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.typesafe.slick/slick-hikaricp_2.12/docs/slick-hikaricp_2.12-3.2.0-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.zaxxer/HikariCP/srcs/HikariCP-2.5.1-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.zaxxer/HikariCP/bundles/HikariCP-2.5.1.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.zaxxer/HikariCP/docs/HikariCP-2.5.1-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-jdbc-api_2.12/srcs/play-jdbc-api_2.12-2.6.0-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-jdbc-api_2.12/jars/play-jdbc-api_2.12-2.6.0.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-jdbc-api_2.12/docs/play-jdbc-api_2.12-2.6.0-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-slick-evolutions_2.12/srcs/play-slick-evolutions_2.12-3.0.0-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-slick-evolutions_2.12/jars/play-slick-evolutions_2.12-3.0.0.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-slick-evolutions_2.12/docs/play-slick-evolutions_2.12-3.0.0-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-jdbc-evolutions_2.12/srcs/play-jdbc-evolutions_2.12-2.6.0-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-jdbc-evolutions_2.12/jars/play-jdbc-evolutions_2.12-2.6.0.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-jdbc-evolutions_2.12/docs/play-jdbc-evolutions_2.12-2.6.0-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
+  <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.h2database/h2/srcs/h2-1.4.196-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.h2database/h2/jars/h2-1.4.196.jar">
+    <attributes>
+      <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.h2database/h2/docs/h2-1.4.196-javadoc.jar!/"/>
+    </attributes>
+  </classpathentry>
   <classpathentry sourcepath="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-test_2.12/srcs/play-test_2.12-2.6.7-sources.jar" kind="lib" path="/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-test_2.12/jars/play-test_2.12-2.6.7.jar">
     <attributes>
       <attribute name="javadoc_location" value="jar:file:/Users/kpyancey/.ivy2/cache/com.typesafe.play/play-test_2.12/docs/play-test_2.12-2.6.7-javadoc.jar!/"/>

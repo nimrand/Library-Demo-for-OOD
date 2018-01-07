@@ -1,5 +1,9 @@
 [0m[[0m[0mdebug[0m] [0m[0mCopy resource mappings: [0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/library/conf/application.conf,/Users/kpyancey/Projects/library/target/scala-2.12/classes/application.conf)[0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/library/conf/logback.xml,/Users/kpyancey/Projects/library/target/scala-2.12/classes/logback.xml)[0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/library/conf/messages,/Users/kpyancey/Projects/library/target/scala-2.12/classes/messages)[0m
-[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/library/conf/routes,/Users/kpyancey/Projects/library/target/scala-2.12/classes/routes)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/application.conf,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/application.conf)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/evolutions,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/evolutions)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/logback.xml,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/logback.xml)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/messages,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/messages)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/routes)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/evolutions/default,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/evolutions/default)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/evolutions/default/1.sql,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/evolutions/default/1.sql)[0m
+[0m[[0m[0mdebug[0m] [0m[0m	(/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/evolutions/default/2.sql,/Users/kpyancey/Projects/Library-Demo-for-OOD/target/scala-2.12/classes/evolutions/default/2.sql)[0m

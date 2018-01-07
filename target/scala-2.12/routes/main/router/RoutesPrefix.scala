@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
-// @SOURCE:/Users/kpyancey/Projects/library/conf/routes
-// @DATE:Sat Nov 18 23:08:12 KST 2017
+// @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
+// @DATE:Sun Jan 07 18:38:07 KST 2018
 
 
 package router {

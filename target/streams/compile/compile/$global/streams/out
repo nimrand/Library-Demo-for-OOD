@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/registerPublisher.scala.html:8:60: value registerBookPost is not a member of controllers.ReverseLibraryAppController[0m
+[0m[[0m[31merror[0m] [0m[0m	@b3.form(action = controllers.routes.LibraryAppController.registerBookPost()) {[0m
+[0m[[0m[31merror[0m] [0m[0m	                                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
