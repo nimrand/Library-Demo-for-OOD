@@ -1,0 +1,21 @@
+@import b3.vertical.fieldConstructor 
+@import helper._
+@import business.EditLibraryMemberDTO
+@import business.Publisher
+@import scala.collection.immutable.Seq
+
+@(libraryMemberForm : Form[EditLibraryMemberDTO])(implicit messages: Messages, req: RequestHeader)
+
+@main("Register Library Member") {
+	<h1>Register Library Member</h1>
+	@b3.form(action = routes.LibraryAppController.registerLibraryMemberPost()) {
+	  @CSRF.formField
+	  @b3.text(libraryMemberForm("firstName"), '_label -> "First Name", 'placeholder -> "George")
+	  @b3.text(libraryMemberForm("middleName"), '_label -> "Middle Name", 'placeholder -> "R. R.")
+	  @b3.text(libraryMemberForm("lastName"), '_label -> "Last Name", 'placeholder -> "Martin")
+	  @b3.text(libraryMemberForm("suffixName"), '_label -> "Suffix Name", 'placeholder -> "Jr")
+	  @b3.text(libraryMemberForm("titles"), '_label -> "Titles", 'placeholder -> "PhD MD CFP etc.")
+	  @b3.date(libraryMemberForm("joinedDate"), '_label -> "Joined Date")
+	  @b3.submit('class -> "btn btn-primary"){ Register Library Member }
+	}
+}

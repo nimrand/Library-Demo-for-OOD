@@ -1,0 +1,27 @@
+@* searchBooks Template File *@
+
+@import b3.vertical.fieldConstructor 
+@import helper._
+@import business.BookListing
+@import scala.collection.immutable.Seq
+
+@(searchForm: Form[Seq[String]], books : Seq[BookListing] = Seq())(implicit messages: Messages, req: RequestHeader)
+
+@main("Search Books") {
+	@b3.form(action = routes.LibraryAppController.searchBooks()) {
+	  @CSRF.formField
+	  @b3.text(searchForm("searchTerms"), '_label -> "Search Terms", 'placeholder -> "Search by book title, keyword, description, call no., ISBN, or publisher.")
+	  @b3.submit('class -> "btn btn-primary"){ Search Books }
+	}
+	@if(!books.isEmpty) {
+	  <div class="table-responsive">
+		  <table class="table table-striped">
+		  	<tr><th>Title</th><th>ISBN</th><th>Call Number</th><th>Status</th><tr>
+		  	@for(book <- books) {
+		  		<tr><td><a href="@routes.LibraryAppController.viewBookDetails(book.bookID)">@book.title</a></td><td>@book.isbn</td><td>@book.callNumber</td><td>@book.status.name</td></tr>
+		  		<tr><td colspan="4"><em>Keywords:</em> @book.keywords.mkString(" ")<br /><br /> @book.description</td></tr>
+		  	}
+		  </table>
+	  </div>
+	}
+}

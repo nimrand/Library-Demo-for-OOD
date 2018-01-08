@@ -30,7 +30,8 @@ object editBook extends _root_.play.twirl.api.BaseScalaTemplate[play.twirl.api.H
 Seq[Any](format.raw/*6.153*/("""
 
 """),_display_(/*8.2*/main("Edit Book")/*8.19*/ {_display_(Seq[Any](format.raw/*8.21*/("""
-	"""),_display_(/*9.3*/bookForm(form, publisherForm, publishers, "Save Changes", controllers.routes.LibraryAppController.editBookPost(bookID.asInt))),format.raw/*9.128*/("""
+	"""),format.raw/*9.2*/("""<h1>Edit Book</h1>
+	"""),_display_(/*10.3*/bookForm(form, publisherForm, publishers, "Save Changes", controllers.routes.LibraryAppController.editBookPost(bookID))),format.raw/*10.122*/("""
 """)))}))
       }
     }
@@ -47,11 +48,11 @@ Seq[Any](format.raw/*6.153*/("""
 
               /*
                   -- GENERATED --
-                  DATE: Mon Jan 08 09:18:16 KST 2018
+                  DATE: Mon Jan 08 11:21:37 KST 2018
                   SOURCE: /Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/editBook.scala.html
-                  HASH: f48d308757c14e50a538cf04a12c04817199302f
-                  MATRIX: 432->1|467->30|500->57|530->81|944->121|1191->272|1219->275|1244->292|1283->294|1311->297|1457->422
-                  LINES: 17->1|18->2|19->3|20->4|25->6|30->6|32->8|32->8|32->8|33->9|33->9
+                  HASH: bb24a78c8e8405bc6040d67622cfab6e3ab9d388
+                  MATRIX: 432->1|467->30|500->57|530->81|944->121|1191->272|1219->275|1244->292|1283->294|1311->296|1358->317|1499->436
+                  LINES: 17->1|18->2|19->3|20->4|25->6|30->6|32->8|32->8|32->8|33->9|34->10|34->10
                   -- GENERATED --
               */
           

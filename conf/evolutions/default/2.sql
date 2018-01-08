@@ -25,6 +25,7 @@ CREATE TABLE Book (
     call_number VARCHAR(32) NOT NULL,
     publication_date VARCHAR(32) NOT NULL,
     publisher_id INTEGER NOT NULL,
+    status_code INTEGER NOT NULL,
     FOREIGN KEY(publisher_id) REFERENCES Publisher(id)
 );
 

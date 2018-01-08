@@ -25,8 +25,8 @@ object index extends _root_.play.twirl.api.BaseScalaTemplate[play.twirl.api.Html
 
 Seq[Any](format.raw/*1.4*/("""
 
-"""),_display_(/*3.2*/main("Welcome to Play")/*3.25*/ {_display_(Seq[Any](format.raw/*3.27*/("""
-  """),format.raw/*4.3*/("""<h1>Welcome to Play!</h1>
+"""),_display_(/*3.2*/main("Welcome to the Lawrence Public Library")/*3.48*/ {_display_(Seq[Any](format.raw/*3.50*/("""
+  """),format.raw/*4.3*/("""<h1>Welcome to the Lawrence Public Library!</h1>
 """)))}),format.raw/*5.2*/("""
 """))
       }
@@ -44,10 +44,10 @@ Seq[Any](format.raw/*1.4*/("""
 
               /*
                   -- GENERATED --
-                  DATE: Sat Jan 06 22:04:14 KST 2018
+                  DATE: Mon Jan 08 15:42:34 KST 2018
                   SOURCE: /Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/index.scala.html
-                  HASH: f7d71d8a9f655317469a39627564796bcf2a545b
-                  MATRIX: 722->1|818->3|846->6|877->29|916->31|945->34|1001->61
+                  HASH: 01316aa0ab054dc0fc2a0779bda3dddf1f2b1bd9
+                  MATRIX: 722->1|818->3|846->6|900->52|939->54|968->57|1047->107
                   LINES: 21->1|26->1|28->3|28->3|28->3|29->4|30->5
                   -- GENERATED --
               */

@@ -2,10 +2,13 @@
 
 @import business.Book
 @import business.BookID
+@import business.BookStatus
+@import helper._
 
-@(bookID : BookID, book : Book)
+@(bookID : BookID, book : Book)(implicit messages: Messages, req: RequestHeader)
 
 @main("Book Details") {
+	<h1>Book Details</h1>
 	<div class="row">
 	<div class="col-md-8">
 	<dl class="dl-horizontal">
@@ -16,7 +19,7 @@
 	  <dt>Call Number</dt>
 	  <dd>@book.callNumber</dd>
 	  <dt>Keywords</dt>
-	  <dd>@book.keywords</dd>
+	  <dd>@book.keywords.mkString(" ")</dd>
 	  <dt>Description</dt>
 	  <dd>@book.description</dd>
 	  <dt>Publisher</dt>
@@ -25,10 +28,113 @@
 	  <dd>@book.publicationDate.toString</dd>
 	  <dt>Price</dt>
 	  <dd>$ @book.price.toString</dd>
+	  <dt>Status</dt>
+	  <dd>@book.status.name</dd>
 	</dl>
 	</div>
 	<div class="col-md-4">
-		<a class="btn btn-default" href="@routes.LibraryAppController.editBook(bookID.asInt)">Edit Book</a>
+		<div class="btn-group-vertical" role="group">
+		  <a class="btn btn-default" href="@routes.LibraryAppController.editBook(bookID)">Edit Book</a>
+			@if(book.status != BookStatus.Disposed) {
+			  @if(book.status == BookStatus.Available) {
+			    <a class="btn btn-default" href="@routes.LibraryAppController.loanBook(bookID)">Loan Book</a>
+			  } else if(book.status == BookStatus.CheckedOut) {
+			    <a class="btn btn-default" data-toggle="modal" href="@routes.LibraryAppController.reportBookReturned(bookID)">Report Returned</a>
+			  }
+			  @if(book.status == BookStatus.Available || book.status == BookStatus.CheckedOut) {
+			    <button class="btn btn-default" data-toggle="modal" data-target="#reportBookLostDialog">Report Lost</button>
+			  } else if(book.status == BookStatus.Lost) {
+			    <button class="btn btn-default" data-toggle="modal" data-target="#reportBookFoundDialog">Report Found</button>
+			  }
+			  @if(book.status == BookStatus.Available) {
+			    <button class="btn btn-default" data-toggle="modal" data-target="#disposeBookDialog">Dispose</button>
+			  }
+			}
+		</div>
+	  </div>
 	</div>
+	
+	<div id="reportBookLostDialog" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+	
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Report Lost</h4>
+	      </div>
+	      <div class="modal-body">
+	        Are you sure you want to report the book as lost?
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-danger" id="confirmBookLostButton">Yes</button>
+	        <button type="button" class="btn btn-primary" data-dismiss="modal">Nevermind</button>
+	      </div>
+	    </div>
+	  </div>
 	</div>
+	
+	<div id="reportBookFoundDialog" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+	
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Report Lost</h4>
+	      </div>
+	      <div class="modal-body">
+	        Are you sure you want to report the book as found?
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-danger" id="confirmBookFoundButton">Yes</button>
+	        <button type="button" class="btn btn-primary" data-dismiss="modal">Nevermind</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	<div id="disposeBookDialog" class="modal fade" role="dialog">
+	  <div class="modal-dialog">
+	
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Report Lost</h4>
+	      </div>
+	      <div class="modal-body">
+	        Are you sure you want to report the book as found?
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-danger" id="confirmDisposeBookButton">Yes</button>
+	        <button type="button" class="btn btn-primary" data-dismiss="modal">Nevermind</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
+	@form(controllers.routes.LibraryAppController.reportBookLost(bookID), 'id -> "reportLostForm") {
+	  @CSRF.formField
+	}
+	@form(controllers.routes.LibraryAppController.reportBookFound(bookID), 'id -> "reportFoundForm") {
+	  @CSRF.formField
+	}
+	@form(controllers.routes.LibraryAppController.disposeBook(bookID), 'id -> "disposeBookForm") {
+	  @CSRF.formField
+	}
+	
+	<script>
+  $(function() {
+    $("#confirmBookLostButton").click(function() {
+      $("#reportLostForm").submit()
+    })
+    $("#confirmBookFoundButton").click(function() {
+      $("#reportFoundForm").submit()
+    })
+    $("#confirmDisposeBookButton").click(function() {
+      $("#disposeBookForm").submit()
+    })
+  })
+  </script>
 }

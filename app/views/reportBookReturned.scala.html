@@ -1,0 +1,18 @@
+@import b3.vertical.fieldConstructor 
+@import helper._
+@import business.LoanBookDTO
+@import business.LibraryMember
+@import business.Publisher
+@import business.Book
+@import scala.collection.immutable.Seq
+@import java.time.LocalDate
+
+@(bookReturnedForm : Form[LocalDate], book : Book)(implicit messages: Messages, req: RequestHeader)
+
+@main("Loan Book") {
+	<h1>Report Book Returned - @book.title</h1>
+	@form(action = routes.LibraryAppController.reportBookReturned(book.id), 'id -> "bookReturnedForm") {
+      @CSRF.formField
+      @b3.date(controllers.Forms.defaultBookReturnedForm()("returnedDate"), '_label -> "Returned Date")
+    }
+}

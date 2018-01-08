@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 09:29:48 KST 2018
+// @DATE:Mon Jan 08 16:15:07 KST 2018
 
 import play.api.mvc.Call
 
@@ -19,22 +19,22 @@ package controllers {
     }
 
   
-    // @LINE:11
-    def editBook(id:Int): Call = {
+    // @LINE:18
+    def registerLibraryMember(): Call = {
       
-      Call("GET", _prefix + { _defaultPrefix } + "books/edit/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[Int]].unbind("id", id)))
+      Call("GET", _prefix + { _defaultPrefix } + "libraryMembers/register")
     }
   
-    // @LINE:14
+    // @LINE:16
+    def disposeBook(id:business.BookID): Call = {
+      
+      Call("POST", _prefix + { _defaultPrefix } + "books/dispose/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
+    }
+  
+    // @LINE:17
     def registerPublisherPost(): Call = {
       
       Call("POST", _prefix + { _defaultPrefix } + "publishers/register")
-    }
-  
-    // @LINE:13
-    def registerPublisher(): Call = {
-      
-      Call("GET", _prefix + { _defaultPrefix } + "publishers/register")
     }
   
     // @LINE:9
@@ -43,10 +43,28 @@ package controllers {
       Call("POST", _prefix + { _defaultPrefix } + "books/register")
     }
   
+    // @LINE:12
+    def editBookPost(id:business.BookID): Call = {
+      
+      Call("POST", _prefix + { _defaultPrefix } + "books/edit/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
+    }
+  
+    // @LINE:11
+    def editBook(id:business.BookID): Call = {
+      
+      Call("GET", _prefix + { _defaultPrefix } + "books/edit/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
+    }
+  
     // @LINE:10
     def viewBookDetails(id:business.BookID): Call = {
       
       Call("GET", _prefix + { _defaultPrefix } + "books/details/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
+    }
+  
+    // @LINE:15
+    def reportBookFound(id:business.BookID): Call = {
+      
+      Call("POST", _prefix + { _defaultPrefix } + "books/reportFound/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
     }
   
     // @LINE:8
@@ -55,28 +73,52 @@ package controllers {
       Call("GET", _prefix + { _defaultPrefix } + "books/register")
     }
   
+    // @LINE:13
+    def searchBooks(): Call = {
+      
+      Call("GET", _prefix + { _defaultPrefix } + "books/search")
+    }
+  
+    // @LINE:14
+    def reportBookLost(id:business.BookID): Call = {
+      
+      Call("POST", _prefix + { _defaultPrefix } + "books/reportLost/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
+    }
+  
+    // @LINE:21
+    def loanBookPost(id:business.BookID): Call = {
+      
+      Call("POST", _prefix + { _defaultPrefix } + "books/loan/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
+    }
+  
+    // @LINE:20
+    def loanBook(id:business.BookID): Call = {
+      
+      Call("GET", _prefix + { _defaultPrefix } + "books/loan/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
+    }
+  
     // @LINE:7
     def index(): Call = {
       
       Call("GET", _prefix)
     }
   
-    // @LINE:12
-    def editBookPost(id:Int): Call = {
+    // @LINE:19
+    def registerLibraryMemberPost(): Call = {
       
-      Call("POST", _prefix + { _defaultPrefix } + "books/edit/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[Int]].unbind("id", id)))
+      Call("POST", _prefix + { _defaultPrefix } + "libraryMembers/register")
     }
   
   }
 
-  // @LINE:17
+  // @LINE:24
   class ReverseAssets(_prefix: => String) {
     def _defaultPrefix: String = {
       if (_prefix.endsWith("/")) "" else "/"
     }
 
   
-    // @LINE:17
+    // @LINE:24
     def versioned(file:Asset): Call = {
       implicit lazy val _rrc = new play.core.routing.ReverseRouteContext(Map(("path", "/public"))); _rrc
       Call("GET", _prefix + { _defaultPrefix } + "assets/" + implicitly[play.api.mvc.PathBindable[Asset]].unbind("file", file))

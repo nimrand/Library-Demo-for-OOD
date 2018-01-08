@@ -1,6 +1,8 @@
-[0m[[0m[31merror[0m] [0m[0m/Users/kpyancey/Projects/Library-Demo-for-OOD/app/controllers/LibraryAppController.scala:73:62: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : Int[0m
-[0m[[0m[31merror[0m] [0m[0m required: business.BookID[0m
-[0m[[0m[31merror[0m] [0m[0m        Redirect(routes.LibraryAppController.viewBookDetails(bookID))[0m
-[0m[[0m[31merror[0m] [0m[0m                                                             ^[0m
-[0m[[0m[31merror[0m] [0m[0mone error found[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/viewBookDetails.scala.html:127:53: value reportBookReturned is not a member of controllers.ReverseLibraryAppController[0m
+[0m[[0m[31merror[0m] [0m[0m	        @form(action = routes.LibraryAppController.reportBookReturned(book.id), 'id -> "bookReturnedForm") {[0m
+[0m[[0m[31merror[0m] [0m[0m	                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/viewBookDetails.scala.html:129:62: not enough arguments for method apply: (key: String)play.api.data.Field in class Form.[0m
+[0m[[0m[31merror[0m] [0m[0mUnspecified value parameter key.[0m
+[0m[[0m[31merror[0m] [0m[0m	          @b3.date(controllers.Forms.defaultBookReturnedForm()("returnedDate"), '_label -> "Returned Date")[0m
+[0m[[0m[31merror[0m] [0m[0m	                                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0mtwo errors found[0m

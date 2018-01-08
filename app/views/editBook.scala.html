@@ -6,5 +6,6 @@
 @(bookID : BookID, form : Form[EditBookDTO], publisherForm : Form[String], publishers : Seq[Publisher])(implicit messages: Messages, req: RequestHeader)
 
 @main("Edit Book") {
-	@bookForm(form, publisherForm, publishers, "Save Changes", controllers.routes.LibraryAppController.editBookPost(bookID.asInt))
+	<h1>Edit Book</h1>
+	@bookForm(form, publisherForm, publishers, "Save Changes", controllers.routes.LibraryAppController.editBookPost(bookID))
 }

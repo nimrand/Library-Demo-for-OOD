@@ -43,11 +43,10 @@ Seq[Any](format.raw/*7.32*/("""
     </head>
     <body>
     		<div class="container-fluid">
-    		<h1>"""),_display_(/*22.12*/title),format.raw/*22.17*/("""</h1>
-        """),format.raw/*24.32*/("""
-        """),_display_(/*25.10*/content),format.raw/*25.17*/("""
-		"""),format.raw/*26.3*/("""</div>
-      <script src=""""),_display_(/*27.21*/routes/*27.27*/.Assets.versioned("javascripts/main.js")),format.raw/*27.67*/("""" type="text/javascript"></script>
+        """),format.raw/*23.32*/("""
+        """),_display_(/*24.10*/content),format.raw/*24.17*/("""
+		"""),format.raw/*25.3*/("""</div>
+      <script src=""""),_display_(/*26.21*/routes/*26.27*/.Assets.versioned("javascripts/main.js")),format.raw/*26.67*/("""" type="text/javascript"></script>
     </body>
 </html>
 """))
@@ -66,11 +65,11 @@ Seq[Any](format.raw/*7.32*/("""
 
               /*
                   -- GENERATED --
-                  DATE: Mon Jan 08 08:51:32 KST 2018
+                  DATE: Mon Jan 08 11:21:37 KST 2018
                   SOURCE: /Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/main.scala.html
-                  HASH: aa4be5a3c8c43c2f78d68df5df4de8a428e0bfec
-                  MATRIX: 987->260|1112->290|1140->292|1220->397|1256->406|1291->414|1317->419|1406->481|1421->487|1484->528|1572->589|1587->595|1648->634|2036->995|2062->1000|2104->1104|2141->1114|2169->1121|2199->1124|2253->1151|2268->1157|2329->1197
-                  LINES: 26->7|31->7|33->9|36->12|37->13|37->13|37->13|38->14|38->14|38->14|39->15|39->15|39->15|46->22|46->22|47->24|48->25|48->25|49->26|50->27|50->27|50->27
+                  HASH: b56ee0abf5e8e1e45a4ffd92a37d0a67eee6ad3f
+                  MATRIX: 987->260|1112->290|1140->292|1220->397|1256->406|1291->414|1317->419|1406->481|1421->487|1484->528|1572->589|1587->595|1648->634|2034->1082|2071->1092|2099->1099|2129->1102|2183->1129|2198->1135|2259->1175
+                  LINES: 26->7|31->7|33->9|36->12|37->13|37->13|37->13|38->14|38->14|38->14|39->15|39->15|39->15|46->23|47->24|47->24|48->25|49->26|49->26|49->26
                   -- GENERATED --
               */
           

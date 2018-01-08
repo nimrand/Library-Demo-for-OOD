@@ -29,7 +29,8 @@ object registerBook extends _root_.play.twirl.api.BaseScalaTemplate[play.twirl.a
 Seq[Any](format.raw/*5.136*/("""
 
 """),_display_(/*7.2*/main("Register Book")/*7.23*/ {_display_(Seq[Any](format.raw/*7.25*/("""
-	"""),_display_(/*8.3*/bookForm(form, publisherForm, publishers, "Register Book", controllers.routes.LibraryAppController.registerBookPost())),format.raw/*8.121*/("""
+	"""),format.raw/*8.2*/("""<h1>Register Book</h1>
+	"""),_display_(/*9.3*/bookForm(form, publisherForm, publishers, "Register Book", controllers.routes.LibraryAppController.registerBookPost())),format.raw/*9.121*/("""
 """)))}))
       }
     }
@@ -46,11 +47,11 @@ Seq[Any](format.raw/*5.136*/("""
 
               /*
                   -- GENERATED --
-                  DATE: Mon Jan 08 09:16:11 KST 2018
+                  DATE: Mon Jan 08 11:21:37 KST 2018
                   SOURCE: /Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/registerBook.scala.html
-                  HASH: 8d892caa2e5bb8caf970b3fe843d26b906946e19
-                  MATRIX: 432->1|467->30|500->57|911->97|1141->231|1169->234|1198->255|1237->257|1265->260|1404->378
-                  LINES: 17->1|18->2|19->3|24->5|29->5|31->7|31->7|31->7|32->8|32->8
+                  HASH: f0d25c17db82c1040e3d5f898b4ce0ff43a262f8
+                  MATRIX: 432->1|467->30|500->57|911->97|1141->231|1169->234|1198->255|1237->257|1265->259|1315->284|1454->402
+                  LINES: 17->1|18->2|19->3|24->5|29->5|31->7|31->7|31->7|32->8|33->9|33->9
                   -- GENERATED --
               */
           
