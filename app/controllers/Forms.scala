@@ -47,4 +47,11 @@ object Forms {
   )
   
   val reportBookReturnedForm = Form[LocalDate](single("returnedDate" -> localDate))
+  
+  val loginForm = Form(
+    tuple(
+      "username" -> text,
+      "password" -> text
+    )
+  )
 }

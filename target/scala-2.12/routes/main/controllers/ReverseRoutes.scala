@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 17:47:11 KST 2018
+// @DATE:Mon Jan 08 22:01:14 KST 2018
 
 import play.api.mvc.Call
 
@@ -73,6 +73,12 @@ package controllers {
       Call("POST", _prefix + { _defaultPrefix } + "books/reportFound/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
     }
   
+    // @LINE:26
+    def logout(): Call = {
+      
+      Call("GET", _prefix + { _defaultPrefix } + "signout")
+    }
+  
     // @LINE:8
     def registerBook(): Call = {
       
@@ -83,6 +89,12 @@ package controllers {
     def searchBooks(): Call = {
       
       Call("GET", _prefix + { _defaultPrefix } + "books/search")
+    }
+  
+    // @LINE:25
+    def loginPost(): Call = {
+      
+      Call("POST", _prefix + { _defaultPrefix } + "signin")
     }
   
     // @LINE:14
@@ -121,16 +133,22 @@ package controllers {
       Call("POST", _prefix + { _defaultPrefix } + "libraryMembers/register")
     }
   
+    // @LINE:24
+    def login(): Call = {
+      
+      Call("GET", _prefix + { _defaultPrefix } + "signin")
+    }
+  
   }
 
-  // @LINE:26
+  // @LINE:29
   class ReverseAssets(_prefix: => String) {
     def _defaultPrefix: String = {
       if (_prefix.endsWith("/")) "" else "/"
     }
 
   
-    // @LINE:26
+    // @LINE:29
     def versioned(file:Asset): Call = {
       implicit lazy val _rrc = new play.core.routing.ReverseRouteContext(Map(("path", "/public"))); _rrc
       Call("GET", _prefix + { _defaultPrefix } + "assets/" + implicitly[play.api.mvc.PathBindable[Asset]].unbind("file", file))

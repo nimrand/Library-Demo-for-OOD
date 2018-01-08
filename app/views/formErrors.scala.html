@@ -1,0 +1,10 @@
+@* formErrors Template File *@
+@(form : Form[_])(implicit messages: Messages, req: RequestHeader)
+
+@if(form.hasGlobalErrors) {
+  <ul>
+  @for(error <- form.globalErrors) {
+    <li>@error.format</li>
+  }
+  </ul>
+}

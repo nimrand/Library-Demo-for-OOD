@@ -8,6 +8,7 @@
 @(searchForm: Form[Seq[String]], books : Seq[BookListing] = Seq())(implicit messages: Messages, req: RequestHeader)
 
 @main("Search Books") {
+	<h1>Search Books</h1>
 	@b3.form(action = routes.LibraryAppController.searchBooks()) {
 	  @CSRF.formField
 	  @b3.text(searchForm("searchTerms"), '_label -> "Search Terms", 'placeholder -> "Search by book title, keyword, description, call no., ISBN, or publisher.")

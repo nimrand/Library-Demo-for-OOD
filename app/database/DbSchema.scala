@@ -116,4 +116,13 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   }
   
   val bookLoans = TableQuery[BookLoanTable]
+  
+  class UserTable(tag : Tag) extends Table[(String, String)](tag, "User") {
+    def username = column[String]("username")
+    def password = column[String]("password")
+    
+    def * = (username, password)
+  }
+  
+  val users = TableQuery[UserTable]
 }

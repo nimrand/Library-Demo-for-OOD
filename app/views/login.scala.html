@@ -1,0 +1,21 @@
+@import b3.vertical.fieldConstructor 
+@import helper._
+@import business.LoanBookDTO
+@import business.LibraryMember
+@import business.Publisher
+@import business.Book
+@import scala.collection.immutable.Seq
+@import java.time.LocalDate
+
+@(loginForm : Form[(String, String)])(implicit messages: Messages, req: RequestHeader)
+
+@main("Login") {
+	<h1>Sign In</h1>
+	@form(action = routes.LibraryAppController.loginPost, 'id -> "bookReturnedForm") {
+	  @formErrors(loginForm)
+      @CSRF.formField
+      @b3.text(loginForm("username"), '_label -> "Username")
+      @b3.text(loginForm("password"), '_label -> "Password")
+      @b3.submit('class -> "btn btn-primary"){ Sign In }
+    }
+}

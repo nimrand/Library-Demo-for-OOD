@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 17:47:11 KST 2018
+// @DATE:Mon Jan 08 22:01:14 KST 2018
 
 import play.api.routing.JavaScriptReverseRoute
 
@@ -110,6 +110,16 @@ package controllers.javascript {
       """
     )
   
+    // @LINE:26
+    def logout: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.logout",
+      """
+        function() {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "signout"})
+        }
+      """
+    )
+  
     // @LINE:8
     def registerBook: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.LibraryAppController.registerBook",
@@ -126,6 +136,16 @@ package controllers.javascript {
       """
         function() {
           return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "books/search"})
+        }
+      """
+    )
+  
+    // @LINE:25
+    def loginPost: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.loginPost",
+      """
+        function() {
+          return _wA({method:"POST", url:"""" + _prefix + { _defaultPrefix } + """" + "signin"})
         }
       """
     )
@@ -190,9 +210,19 @@ package controllers.javascript {
       """
     )
   
+    // @LINE:24
+    def login: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.login",
+      """
+        function() {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "signin"})
+        }
+      """
+    )
+  
   }
 
-  // @LINE:26
+  // @LINE:29
   class ReverseAssets(_prefix: => String) {
 
     def _defaultPrefix: String = {
@@ -200,7 +230,7 @@ package controllers.javascript {
     }
 
   
-    // @LINE:26
+    // @LINE:29
     def versioned: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.Assets.versioned",
       """

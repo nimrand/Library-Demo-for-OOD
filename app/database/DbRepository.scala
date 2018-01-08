@@ -124,8 +124,6 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     )
   }
   
-  
-  
   def setReturnedDate(bookLoanID : BookLoanID, returnedDate : LocalDate) : Future[Unit] = {
     val bookLoanIDInt = bookLoanID.asInt
     val returnedDateString = Some(returnedDate.format(dateFormat))
