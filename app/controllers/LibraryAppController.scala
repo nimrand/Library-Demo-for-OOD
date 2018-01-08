@@ -81,8 +81,10 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
   }
   
   def viewBookDetails(bookID : BookID) = Action.async { implicit request =>
-    businessApi.getBook(bookID).map { book =>
-      Ok(views.html.viewBookDetails(bookID, book))
+    businessApi.getBook(bookID).flatMap { book =>
+      businessApi.getBookLoanHistory(bookID).map { loanHistory =>
+        Ok(views.html.viewBookDetails(book, loanHistory))
+      }
     }
   }
   
@@ -153,17 +155,23 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
     )
   }
   
-  def reportReturned(bookID : BookID) = Action.async { implicit request =>
+  def reportBookReturned(bookID : BookID) = Action.async { implicit request =>
     businessApi.getBook(bookID).map { book =>
       val form = reportBookReturnedForm.fill(LocalDate.now)
       Ok(views.html.reportBookReturned(form, book))
     }
   }
   
-  def reportReturnedPost(bookID : BookID) = Action.async { implicit request =>
-    businessApi.getBook(bookID).map { book =>
-      val form = reportBookReturnedForm.fill(LocalDate.now)
-      Ok(views.html.reportBookReturned(form, book))
-    }
+  def reportBookReturnedPost(bookID : BookID) = Action.async { implicit request =>
+    reportBookReturnedForm.bindFromRequest.fold(
+      formWithErrors => 
+        businessApi.getBook(bookID).map { book =>
+          BadRequest(views.html.reportBookReturned(formWithErrors, book))
+        },
+      returnedDate => 
+        businessApi.reportBookReturned(bookID, returnedDate).map { _ =>
+          Redirect(routes.LibraryAppController.viewBookDetails(bookID))
+        }
+    )
   }
 }

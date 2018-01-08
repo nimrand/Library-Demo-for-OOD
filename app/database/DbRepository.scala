@@ -15,6 +15,8 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   import profile.api._
   import dbSchema._
   
+  implicit val localDateOrdering: Ordering[LocalDate] = Ordering.by(_.toEpochDay)
+  
   implicit class RichEditBookDTO(book : EditBookDTO) {
     def fields =
       (book.title, book.isbn.toString, book.price.toString, book.keywords.mkString(" "), book.description, book.callNumber, book.publicationDate.format(dateFormat), book.publisherID.asInt)
@@ -113,5 +115,20 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
         into ((name, id) => BookLoanID(id))
       ) += fields
     }
+  }
+  
+  def getBookLoans(bookID : BookID) : Future[Seq[BookLoan]] = {
+    val bookIDInt = bookID.asInt
+    db.run{ (bookLoans.filter(_.bookID === bookIDInt) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.id === _.id)).result }.map(
+        _.to[Seq].map(fields => new BookLoan(BookLoanID(fields._1._1._1), BookID(fields._1._1._2), new LibraryMember(LibraryMemberID(fields._1._1._3), fields._2._2, fields._1._2._3), LocalDate.parse(fields._1._1._4, dateFormat), LocalDate.parse(fields._1._1._5, dateFormat), fields._1._1._6.map(LocalDate.parse(_, dateFormat)))).sortBy(_.loanedDate).reverse
+    )
+  }
+  
+  
+  
+  def setReturnedDate(bookLoanID : BookLoanID, returnedDate : LocalDate) : Future[Unit] = {
+    val bookLoanIDInt = bookLoanID.asInt
+    val returnedDateString = Some(returnedDate.format(dateFormat))
+    db.run(bookLoans.filter(_.id === bookLoanIDInt).map(_.returnedDate).update(returnedDateString)).map(_ => ())
   }
 }

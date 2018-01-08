@@ -1,7 +1,5 @@
 package business
 import java.time.LocalDate
 
-class BookLoan(val bookLoanID : BookLoanID, val bookID : BookID, val memberID : LibraryMemberID, val loanedDate : LocalDate, private var _dueDate : LocalDate, private var _returnedDate : LocalDate) {
-  def dueDate : LocalDate = _dueDate
-  def returnedDate : LocalDate = _returnedDate
+class BookLoan(val id : BookLoanID, val bookID : BookID, val member : LibraryMember, val loanedDate : LocalDate, val dueDate : LocalDate, val returnedDate : Option[LocalDate]) {
 }

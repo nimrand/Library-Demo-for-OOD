@@ -4,6 +4,7 @@ import database.DbRepository
 import scala.concurrent.{ Future, ExecutionContext }
 import javax.inject._
 import scala.collection.immutable._
+import java.time.LocalDate
 
 class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
   def registerPublisher(publisher : String) : Future[PublisherID] = repository.createPublisher(publisher)
@@ -25,4 +26,12 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
     repository.createBookLoan(bookID, loan).flatMap{ loanID => {
       repository.setBookStatus(bookID, BookStatus.CheckedOut).map(_ => loanID)
     }}
+  def reportBookReturned(bookID : BookID, returnedDate : LocalDate)  (implicit executor : scala.concurrent.ExecutionContext) : Future[Unit] =
+    repository.getBookLoans(bookID).flatMap { loans =>
+      repository.setReturnedDate(loans.head.id, returnedDate).flatMap { _ =>
+        repository.setBookStatus(bookID, BookStatus.Available)
+      }
+    }
+  def getBookLoanHistory(bookID : BookID) : Future[Seq[BookLoan]] =
+    repository.getBookLoans(bookID)
 }

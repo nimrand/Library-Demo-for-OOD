@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 16:15:07 KST 2018
+// @DATE:Mon Jan 08 17:47:11 KST 2018
 
 import play.api.routing.JavaScriptReverseRoute
 
@@ -46,6 +46,16 @@ package controllers.javascript {
       """
         function() {
           return _wA({method:"POST", url:"""" + _prefix + { _defaultPrefix } + """" + "publishers/register"})
+        }
+      """
+    )
+  
+    // @LINE:22
+    def reportBookReturned: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.reportBookReturned",
+      """
+        function(id0) {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "books/reportReturned/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[business.BookID]].javascriptUnbind + """)("id", id0))})
         }
       """
     )
@@ -130,6 +140,16 @@ package controllers.javascript {
       """
     )
   
+    // @LINE:23
+    def reportBookReturnedPost: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.reportBookReturnedPost",
+      """
+        function(id0) {
+          return _wA({method:"POST", url:"""" + _prefix + { _defaultPrefix } + """" + "books/reportReturned/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[business.BookID]].javascriptUnbind + """)("id", id0))})
+        }
+      """
+    )
+  
     // @LINE:21
     def loanBookPost: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.LibraryAppController.loanBookPost",
@@ -172,7 +192,7 @@ package controllers.javascript {
   
   }
 
-  // @LINE:24
+  // @LINE:26
   class ReverseAssets(_prefix: => String) {
 
     def _defaultPrefix: String = {
@@ -180,7 +200,7 @@ package controllers.javascript {
     }
 
   
-    // @LINE:24
+    // @LINE:26
     def versioned: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.Assets.versioned",
       """

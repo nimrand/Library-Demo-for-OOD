@@ -11,8 +11,9 @@
 
 @main("Loan Book") {
 	<h1>Report Book Returned - @book.title</h1>
-	@form(action = routes.LibraryAppController.reportBookReturned(book.id), 'id -> "bookReturnedForm") {
+	@form(action = routes.LibraryAppController.reportBookReturnedPost(book.id), 'id -> "bookReturnedForm") {
       @CSRF.formField
-      @b3.date(controllers.Forms.defaultBookReturnedForm()("returnedDate"), '_label -> "Returned Date")
+      @b3.date(bookReturnedForm("returnedDate"), '_label -> "Returned Date")
+      @b3.submit('class -> "btn btn-primary"){ Report Book Returned }
     }
 }

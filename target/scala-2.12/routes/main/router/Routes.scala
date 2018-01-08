@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 16:15:07 KST 2018
+// @DATE:Mon Jan 08 17:47:11 KST 2018
 
 package router
 
@@ -17,7 +17,7 @@ class Routes(
   override val errorHandler: play.api.http.HttpErrorHandler, 
   // @LINE:7
   LibraryAppController_0: controllers.LibraryAppController,
-  // @LINE:24
+  // @LINE:26
   Assets_1: controllers.Assets,
   val prefix: String
 ) extends GeneratedRouter {
@@ -26,7 +26,7 @@ class Routes(
    def this(errorHandler: play.api.http.HttpErrorHandler,
     // @LINE:7
     LibraryAppController_0: controllers.LibraryAppController,
-    // @LINE:24
+    // @LINE:26
     Assets_1: controllers.Assets
   ) = this(errorHandler, LibraryAppController_0, Assets_1, "/")
 
@@ -55,6 +55,8 @@ class Routes(
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """libraryMembers/register""", """controllers.LibraryAppController.registerLibraryMemberPost"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/loan/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.loanBook(id:business.BookID)"""),
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/loan/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.loanBookPost(id:business.BookID)"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/reportReturned/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.reportBookReturned(id:business.BookID)"""),
+    ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/reportReturned/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.reportBookReturnedPost(id:business.BookID)"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """assets/""" + "$" + """file<.+>""", """controllers.Assets.versioned(path:String = "/public", file:Asset)"""),
     Nil
   ).foldLeft(List.empty[(String,String,String)]) { (s,e) => e.asInstanceOf[Any] match {
@@ -333,11 +335,47 @@ class Routes(
     )
   )
 
-  // @LINE:24
-  private[this] lazy val controllers_Assets_versioned15_route = Route("GET",
+  // @LINE:22
+  private[this] lazy val controllers_LibraryAppController_reportBookReturned15_route = Route("GET",
+    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("books/reportReturned/"), DynamicPart("id", """[^/]+""",true)))
+  )
+  private[this] lazy val controllers_LibraryAppController_reportBookReturned15_invoker = createInvoker(
+    LibraryAppController_0.reportBookReturned(fakeValue[business.BookID]),
+    play.api.routing.HandlerDef(this.getClass.getClassLoader,
+      "router",
+      "controllers.LibraryAppController",
+      "reportBookReturned",
+      Seq(classOf[business.BookID]),
+      "GET",
+      this.prefix + """books/reportReturned/""" + "$" + """id<[^/]+>""",
+      """""",
+      Seq()
+    )
+  )
+
+  // @LINE:23
+  private[this] lazy val controllers_LibraryAppController_reportBookReturnedPost16_route = Route("POST",
+    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("books/reportReturned/"), DynamicPart("id", """[^/]+""",true)))
+  )
+  private[this] lazy val controllers_LibraryAppController_reportBookReturnedPost16_invoker = createInvoker(
+    LibraryAppController_0.reportBookReturnedPost(fakeValue[business.BookID]),
+    play.api.routing.HandlerDef(this.getClass.getClassLoader,
+      "router",
+      "controllers.LibraryAppController",
+      "reportBookReturnedPost",
+      Seq(classOf[business.BookID]),
+      "POST",
+      this.prefix + """books/reportReturned/""" + "$" + """id<[^/]+>""",
+      """""",
+      Seq()
+    )
+  )
+
+  // @LINE:26
+  private[this] lazy val controllers_Assets_versioned17_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("assets/"), DynamicPart("file", """.+""",false)))
   )
-  private[this] lazy val controllers_Assets_versioned15_invoker = createInvoker(
+  private[this] lazy val controllers_Assets_versioned17_invoker = createInvoker(
     Assets_1.versioned(fakeValue[String], fakeValue[Asset]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -444,10 +482,22 @@ class Routes(
         controllers_LibraryAppController_loanBookPost14_invoker.call(LibraryAppController_0.loanBookPost(id))
       }
   
-    // @LINE:24
-    case controllers_Assets_versioned15_route(params@_) =>
+    // @LINE:22
+    case controllers_LibraryAppController_reportBookReturned15_route(params@_) =>
+      call(params.fromPath[business.BookID]("id", None)) { (id) =>
+        controllers_LibraryAppController_reportBookReturned15_invoker.call(LibraryAppController_0.reportBookReturned(id))
+      }
+  
+    // @LINE:23
+    case controllers_LibraryAppController_reportBookReturnedPost16_route(params@_) =>
+      call(params.fromPath[business.BookID]("id", None)) { (id) =>
+        controllers_LibraryAppController_reportBookReturnedPost16_invoker.call(LibraryAppController_0.reportBookReturnedPost(id))
+      }
+  
+    // @LINE:26
+    case controllers_Assets_versioned17_route(params@_) =>
       call(Param[String]("path", Right("/public")), params.fromPath[Asset]("file", None)) { (path, file) =>
-        controllers_Assets_versioned15_invoker.call(Assets_1.versioned(path, file))
+        controllers_Assets_versioned17_invoker.call(Assets_1.versioned(path, file))
       }
   }
 }
