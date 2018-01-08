@@ -1,12 +1,13 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 09:22:21 KST 2018
+// @DATE:Mon Jan 08 09:29:48 KST 2018
 
 import play.api.mvc.Call
 
 
 import _root_.controllers.Assets.Asset
+import _root_.controllers.Binders._
 
 // @LINE:7
 package controllers {
@@ -43,9 +44,9 @@ package controllers {
     }
   
     // @LINE:10
-    def viewBookDetails(id:BookID): Call = {
+    def viewBookDetails(id:business.BookID): Call = {
       
-      Call("GET", _prefix + { _defaultPrefix } + "books/details/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[BookID]].unbind("id", id)))
+      Call("GET", _prefix + { _defaultPrefix } + "books/details/" + play.core.routing.dynamicString(implicitly[play.api.mvc.PathBindable[business.BookID]].unbind("id", id)))
     }
   
     // @LINE:8

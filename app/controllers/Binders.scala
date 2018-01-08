@@ -3,7 +3,7 @@ package controllers
 import business._
 import play.api.mvc.PathBindable
 
-class Binders {
+object Binders {
   implicit def bookIDPathBinder = new PathBindable[BookID] {
       override def bind(key: String, value: String): Either[String, BookID] = {
          try {

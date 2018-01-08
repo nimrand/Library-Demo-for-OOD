@@ -51,7 +51,7 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
         BadRequest(views.html.registerBook(formWithErrors, registerPublisherForm, publishers))
       },
       registerBookRequest => businessApi.registerBook(registerBookRequest).map{ bookID =>
-        Redirect(routes.LibraryAppController.viewBookDetails(bookID.asInt))
+        Redirect(routes.LibraryAppController.viewBookDetails(bookID))
       }
     )
   }

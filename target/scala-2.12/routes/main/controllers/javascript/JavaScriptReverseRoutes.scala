@@ -1,12 +1,13 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 09:22:21 KST 2018
+// @DATE:Mon Jan 08 09:29:48 KST 2018
 
 import play.api.routing.JavaScriptReverseRoute
 
 
 import _root_.controllers.Assets.Asset
+import _root_.controllers.Binders._
 
 // @LINE:7
 package controllers.javascript {
@@ -64,7 +65,7 @@ package controllers.javascript {
       "controllers.LibraryAppController.viewBookDetails",
       """
         function(id0) {
-          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "books/details/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[BookID]].javascriptUnbind + """)("id", id0))})
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "books/details/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[business.BookID]].javascriptUnbind + """)("id", id0))})
         }
       """
     )

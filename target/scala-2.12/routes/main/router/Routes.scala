@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Mon Jan 08 09:22:21 KST 2018
+// @DATE:Mon Jan 08 09:29:48 KST 2018
 
 package router
 
@@ -11,6 +11,7 @@ import play.core.routing.HandlerInvokerFactory._
 import play.api.mvc._
 
 import _root_.controllers.Assets.Asset
+import _root_.controllers.Binders._
 
 class Routes(
   override val errorHandler: play.api.http.HttpErrorHandler, 
@@ -42,7 +43,7 @@ class Routes(
     ("""GET""", this.prefix, """controllers.LibraryAppController.index"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/register""", """controllers.LibraryAppController.registerBook"""),
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/register""", """controllers.LibraryAppController.registerBookPost"""),
-    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/details/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.viewBookDetails(id:BookID)"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/details/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.viewBookDetails(id:business.BookID)"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/edit/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.editBook(id:Int)"""),
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/edit/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.editBookPost(id:Int)"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """publishers/register""", """controllers.LibraryAppController.registerPublisher"""),
@@ -114,12 +115,12 @@ class Routes(
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("books/details/"), DynamicPart("id", """[^/]+""",true)))
   )
   private[this] lazy val controllers_LibraryAppController_viewBookDetails3_invoker = createInvoker(
-    LibraryAppController_0.viewBookDetails(fakeValue[BookID]),
+    LibraryAppController_0.viewBookDetails(fakeValue[business.BookID]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
       "controllers.LibraryAppController",
       "viewBookDetails",
-      Seq(classOf[BookID]),
+      Seq(classOf[business.BookID]),
       "GET",
       this.prefix + """books/details/""" + "$" + """id<[^/]+>""",
       """""",
@@ -240,7 +241,7 @@ class Routes(
   
     // @LINE:10
     case controllers_LibraryAppController_viewBookDetails3_route(params@_) =>
-      call(params.fromPath[BookID]("id", None)) { (id) =>
+      call(params.fromPath[business.BookID]("id", None)) { (id) =>
         controllers_LibraryAppController_viewBookDetails3_invoker.call(LibraryAppController_0.viewBookDetails(id))
       }
   
