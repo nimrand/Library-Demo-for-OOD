@@ -23,3 +23,6 @@ libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.21.0"
 // play.sbt.routes.RoutesKeys.routesImport += "waseda.binders._"
 
 EclipseKeys.preTasks := Seq(compile in Compile, compile in Test)
+
+import play.sbt.routes.RoutesKeys
+RoutesKeys.routesImport += "controllers.Binders._"

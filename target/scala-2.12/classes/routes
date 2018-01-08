@@ -6,7 +6,10 @@
 # An example controller showing a sample home page
 GET     /                           controllers.LibraryAppController.index
 GET     /books/register             controllers.LibraryAppController.registerBook
-GET     /books/register             controllers.LibraryAppController.registerBookPost
+POST    /books/register             controllers.LibraryAppController.registerBookPost
+GET		/books/details/:id          controllers.LibraryAppController.viewBookDetails(id : Int)
+GET		/books/edit/:id             controllers.LibraryAppController.editBook(id : Int)
+POST		/books/edit/:id             controllers.LibraryAppController.editBookPost(id : Int)
 GET     /publishers/register        controllers.LibraryAppController.registerPublisher
 POST    /publishers/register        controllers.LibraryAppController.registerPublisherPost
 

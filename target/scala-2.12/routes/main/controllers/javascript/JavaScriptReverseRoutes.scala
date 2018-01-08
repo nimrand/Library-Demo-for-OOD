@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Sun Jan 07 18:38:07 KST 2018
+// @DATE:Mon Jan 08 09:22:21 KST 2018
 
 import play.api.routing.JavaScriptReverseRoute
 
@@ -20,6 +20,16 @@ package controllers.javascript {
 
   
     // @LINE:11
+    def editBook: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.editBook",
+      """
+        function(id0) {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "books/edit/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[Int]].javascriptUnbind + """)("id", id0))})
+        }
+      """
+    )
+  
+    // @LINE:14
     def registerPublisherPost: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.LibraryAppController.registerPublisherPost",
       """
@@ -29,7 +39,7 @@ package controllers.javascript {
       """
     )
   
-    // @LINE:10
+    // @LINE:13
     def registerPublisher: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.LibraryAppController.registerPublisher",
       """
@@ -44,7 +54,17 @@ package controllers.javascript {
       "controllers.LibraryAppController.registerBookPost",
       """
         function() {
-          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "books/register"})
+          return _wA({method:"POST", url:"""" + _prefix + { _defaultPrefix } + """" + "books/register"})
+        }
+      """
+    )
+  
+    // @LINE:10
+    def viewBookDetails: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.viewBookDetails",
+      """
+        function(id0) {
+          return _wA({method:"GET", url:"""" + _prefix + { _defaultPrefix } + """" + "books/details/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[BookID]].javascriptUnbind + """)("id", id0))})
         }
       """
     )
@@ -69,9 +89,19 @@ package controllers.javascript {
       """
     )
   
+    // @LINE:12
+    def editBookPost: JavaScriptReverseRoute = JavaScriptReverseRoute(
+      "controllers.LibraryAppController.editBookPost",
+      """
+        function(id0) {
+          return _wA({method:"POST", url:"""" + _prefix + { _defaultPrefix } + """" + "books/edit/" + encodeURIComponent((""" + implicitly[play.api.mvc.PathBindable[Int]].javascriptUnbind + """)("id", id0))})
+        }
+      """
+    )
+  
   }
 
-  // @LINE:14
+  // @LINE:17
   class ReverseAssets(_prefix: => String) {
 
     def _defaultPrefix: String = {
@@ -79,7 +109,7 @@ package controllers.javascript {
     }
 
   
-    // @LINE:14
+    // @LINE:17
     def versioned: JavaScriptReverseRoute = JavaScriptReverseRoute(
       "controllers.Assets.versioned",
       """

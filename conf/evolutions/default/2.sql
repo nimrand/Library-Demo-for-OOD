@@ -23,7 +23,7 @@ CREATE TABLE Book (
     keywords TEXT NOT NULL,
     description TEXT NOT NULL,
     call_number VARCHAR(32) NOT NULL,
-    publication_date TEXT NOT NULL,
+    publication_date VARCHAR(32) NOT NULL,
     publisher_id INTEGER NOT NULL,
     FOREIGN KEY(publisher_id) REFERENCES Publisher(id)
 );
@@ -32,12 +32,12 @@ CREATE TABLE BookAuthor (
 	author_id INTEGER NOT NULL,
 	book_id INTEGER NOT NULL,
 	FOREIGN KEY(author_id) REFERENCES Author(id),
-	FOREIGN KEY(publisher_id) REFERENCES Publisher(id)
+	FOREIGN KEY(book_id) REFERENCES Book(id)
 );
 
 # --- !Downs
 
-DROP TABLE BookAuthor;
-DROP TABLE Book;
-DROP TABLE Author;
-DROP TABLE PersonName;
+DROP TABLE IF EXISTS BookAuthor;
+DROP TABLE IF EXISTS Book;
+DROP TABLE IF EXISTS Author;
+DROP TABLE IF EXISTS PersonName;

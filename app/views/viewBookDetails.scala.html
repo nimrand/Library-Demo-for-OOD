@@ -1,0 +1,34 @@
+@* bookDetails Template File *@
+
+@import business.Book
+@import business.BookID
+
+@(bookID : BookID, book : Book)
+
+@main("Book Details") {
+	<div class="row">
+	<div class="col-md-8">
+	<dl class="dl-horizontal">
+	  <dt>Title</dt>
+	  <dd>@book.title</dd>
+	  <dt>ISBN</dt>
+	  <dd>@book.isbn.toString</dd>
+	  <dt>Call Number</dt>
+	  <dd>@book.callNumber</dd>
+	  <dt>Keywords</dt>
+	  <dd>@book.keywords</dd>
+	  <dt>Description</dt>
+	  <dd>@book.description</dd>
+	  <dt>Publisher</dt>
+	  <dd>@book.publisher.name</dd>
+	  <dt>Publication Date</dt>
+	  <dd>@book.publicationDate.toString</dd>
+	  <dt>Price</dt>
+	  <dd>$ @book.price.toString</dd>
+	</dl>
+	</div>
+	<div class="col-md-4">
+		<a class="btn btn-default" href="@routes.LibraryAppController.editBook(bookID.asInt)">Edit Book</a>
+	</div>
+	</div>
+}

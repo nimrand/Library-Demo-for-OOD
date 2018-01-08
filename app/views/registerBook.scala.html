@@ -1,20 +1,9 @@
-@import b3.vertical.fieldConstructor 
-@import helper._
-@import business.RegisterBookRequest
+@import business.EditBookDTO
+@import business.Publisher
+@import scala.collection.immutable.Seq
 
-@(publisherForm : Form[RegisterBookRequest])(implicit messages: Messages, req: RequestHeader)
+@(form : Form[EditBookDTO], publisherForm : Form[String], publishers : Seq[Publisher])(implicit messages: Messages, req: RequestHeader)
 
-@main("Register Publisher") {
-	
-	@b3.form(action = controllers.routes.LibraryAppController.registerBookPost()) {
-	  @CSRF.formField
-	  @b3.text(publisherForm("title"), '_label -> "Title", 'placeholder -> "Enter the book's title here.")
-	  @b3.date(publisherForm("publicationDate"), '_label -> "Publication Date")
-	  @b3.textarea(publisherForm("description"), '_label -> "Description", 'rows -> 3, 'placeholder -> "Enter a description here.")
-	  @b3.text(publisherForm("isbn"), '_label -> "ISBN", 'placeholder -> "978-1-56619-909-4")
-	  @b3.text(publisherForm("price"), '_label -> "Price", 'placeholder -> "10.99")
-	  @b3.text(publisherForm("keywords"), '_label -> "Keywords", 'placeholder -> "flowers plants agriculture")
-	  @b3.text(publisherForm("callNumber"), '_label -> "Call Number", 'placeholder -> "630.51 B661")
-	  @b3.submit('class -> "btn btn-default"){ Register }
-	}
+@main("Register Book") {
+	@bookForm(form, publisherForm, publishers, "Register Book", controllers.routes.LibraryAppController.registerBookPost())
 }

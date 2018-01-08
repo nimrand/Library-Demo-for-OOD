@@ -4,7 +4,6 @@
 @(publisherForm : Form[String])(implicit messages: Messages, req: RequestHeader)
 
 @main("Register Publisher") {
-	
 	@b3.form(action = controllers.routes.LibraryAppController.registerPublisherPost()) {
 	  @CSRF.formField
 	  @b3.text(publisherForm("name"), '_label -> "Publisher Name")

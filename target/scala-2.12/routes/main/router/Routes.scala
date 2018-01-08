@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/Users/kpyancey/Projects/Library-Demo-for-OOD/conf/routes
-// @DATE:Sun Jan 07 18:38:07 KST 2018
+// @DATE:Mon Jan 08 09:22:21 KST 2018
 
 package router
 
@@ -16,7 +16,7 @@ class Routes(
   override val errorHandler: play.api.http.HttpErrorHandler, 
   // @LINE:7
   LibraryAppController_0: controllers.LibraryAppController,
-  // @LINE:14
+  // @LINE:17
   Assets_1: controllers.Assets,
   val prefix: String
 ) extends GeneratedRouter {
@@ -25,7 +25,7 @@ class Routes(
    def this(errorHandler: play.api.http.HttpErrorHandler,
     // @LINE:7
     LibraryAppController_0: controllers.LibraryAppController,
-    // @LINE:14
+    // @LINE:17
     Assets_1: controllers.Assets
   ) = this(errorHandler, LibraryAppController_0, Assets_1, "/")
 
@@ -41,7 +41,10 @@ class Routes(
   def documentation = List(
     ("""GET""", this.prefix, """controllers.LibraryAppController.index"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/register""", """controllers.LibraryAppController.registerBook"""),
-    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/register""", """controllers.LibraryAppController.registerBookPost"""),
+    ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/register""", """controllers.LibraryAppController.registerBookPost"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/details/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.viewBookDetails(id:BookID)"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/edit/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.editBook(id:Int)"""),
+    ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """books/edit/""" + "$" + """id<[^/]+>""", """controllers.LibraryAppController.editBookPost(id:Int)"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """publishers/register""", """controllers.LibraryAppController.registerPublisher"""),
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """publishers/register""", """controllers.LibraryAppController.registerPublisherPost"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """assets/""" + "$" + """file<.+>""", """controllers.Assets.versioned(path:String = "/public", file:Asset)"""),
@@ -89,7 +92,7 @@ class Routes(
   )
 
   // @LINE:9
-  private[this] lazy val controllers_LibraryAppController_registerBookPost2_route = Route("GET",
+  private[this] lazy val controllers_LibraryAppController_registerBookPost2_route = Route("POST",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("books/register")))
   )
   private[this] lazy val controllers_LibraryAppController_registerBookPost2_invoker = createInvoker(
@@ -99,7 +102,7 @@ class Routes(
       "controllers.LibraryAppController",
       "registerBookPost",
       Nil,
-      "GET",
+      "POST",
       this.prefix + """books/register""",
       """""",
       Seq()
@@ -107,10 +110,64 @@ class Routes(
   )
 
   // @LINE:10
-  private[this] lazy val controllers_LibraryAppController_registerPublisher3_route = Route("GET",
+  private[this] lazy val controllers_LibraryAppController_viewBookDetails3_route = Route("GET",
+    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("books/details/"), DynamicPart("id", """[^/]+""",true)))
+  )
+  private[this] lazy val controllers_LibraryAppController_viewBookDetails3_invoker = createInvoker(
+    LibraryAppController_0.viewBookDetails(fakeValue[BookID]),
+    play.api.routing.HandlerDef(this.getClass.getClassLoader,
+      "router",
+      "controllers.LibraryAppController",
+      "viewBookDetails",
+      Seq(classOf[BookID]),
+      "GET",
+      this.prefix + """books/details/""" + "$" + """id<[^/]+>""",
+      """""",
+      Seq()
+    )
+  )
+
+  // @LINE:11
+  private[this] lazy val controllers_LibraryAppController_editBook4_route = Route("GET",
+    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("books/edit/"), DynamicPart("id", """[^/]+""",true)))
+  )
+  private[this] lazy val controllers_LibraryAppController_editBook4_invoker = createInvoker(
+    LibraryAppController_0.editBook(fakeValue[Int]),
+    play.api.routing.HandlerDef(this.getClass.getClassLoader,
+      "router",
+      "controllers.LibraryAppController",
+      "editBook",
+      Seq(classOf[Int]),
+      "GET",
+      this.prefix + """books/edit/""" + "$" + """id<[^/]+>""",
+      """""",
+      Seq()
+    )
+  )
+
+  // @LINE:12
+  private[this] lazy val controllers_LibraryAppController_editBookPost5_route = Route("POST",
+    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("books/edit/"), DynamicPart("id", """[^/]+""",true)))
+  )
+  private[this] lazy val controllers_LibraryAppController_editBookPost5_invoker = createInvoker(
+    LibraryAppController_0.editBookPost(fakeValue[Int]),
+    play.api.routing.HandlerDef(this.getClass.getClassLoader,
+      "router",
+      "controllers.LibraryAppController",
+      "editBookPost",
+      Seq(classOf[Int]),
+      "POST",
+      this.prefix + """books/edit/""" + "$" + """id<[^/]+>""",
+      """""",
+      Seq()
+    )
+  )
+
+  // @LINE:13
+  private[this] lazy val controllers_LibraryAppController_registerPublisher6_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("publishers/register")))
   )
-  private[this] lazy val controllers_LibraryAppController_registerPublisher3_invoker = createInvoker(
+  private[this] lazy val controllers_LibraryAppController_registerPublisher6_invoker = createInvoker(
     LibraryAppController_0.registerPublisher,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -124,11 +181,11 @@ class Routes(
     )
   )
 
-  // @LINE:11
-  private[this] lazy val controllers_LibraryAppController_registerPublisherPost4_route = Route("POST",
+  // @LINE:14
+  private[this] lazy val controllers_LibraryAppController_registerPublisherPost7_route = Route("POST",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("publishers/register")))
   )
-  private[this] lazy val controllers_LibraryAppController_registerPublisherPost4_invoker = createInvoker(
+  private[this] lazy val controllers_LibraryAppController_registerPublisherPost7_invoker = createInvoker(
     LibraryAppController_0.registerPublisherPost,
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -142,11 +199,11 @@ class Routes(
     )
   )
 
-  // @LINE:14
-  private[this] lazy val controllers_Assets_versioned5_route = Route("GET",
+  // @LINE:17
+  private[this] lazy val controllers_Assets_versioned8_route = Route("GET",
     PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("assets/"), DynamicPart("file", """.+""",false)))
   )
-  private[this] lazy val controllers_Assets_versioned5_invoker = createInvoker(
+  private[this] lazy val controllers_Assets_versioned8_invoker = createInvoker(
     Assets_1.versioned(fakeValue[String], fakeValue[Asset]),
     play.api.routing.HandlerDef(this.getClass.getClassLoader,
       "router",
@@ -182,21 +239,39 @@ class Routes(
       }
   
     // @LINE:10
-    case controllers_LibraryAppController_registerPublisher3_route(params@_) =>
-      call { 
-        controllers_LibraryAppController_registerPublisher3_invoker.call(LibraryAppController_0.registerPublisher)
+    case controllers_LibraryAppController_viewBookDetails3_route(params@_) =>
+      call(params.fromPath[BookID]("id", None)) { (id) =>
+        controllers_LibraryAppController_viewBookDetails3_invoker.call(LibraryAppController_0.viewBookDetails(id))
       }
   
     // @LINE:11
-    case controllers_LibraryAppController_registerPublisherPost4_route(params@_) =>
+    case controllers_LibraryAppController_editBook4_route(params@_) =>
+      call(params.fromPath[Int]("id", None)) { (id) =>
+        controllers_LibraryAppController_editBook4_invoker.call(LibraryAppController_0.editBook(id))
+      }
+  
+    // @LINE:12
+    case controllers_LibraryAppController_editBookPost5_route(params@_) =>
+      call(params.fromPath[Int]("id", None)) { (id) =>
+        controllers_LibraryAppController_editBookPost5_invoker.call(LibraryAppController_0.editBookPost(id))
+      }
+  
+    // @LINE:13
+    case controllers_LibraryAppController_registerPublisher6_route(params@_) =>
       call { 
-        controllers_LibraryAppController_registerPublisherPost4_invoker.call(LibraryAppController_0.registerPublisherPost)
+        controllers_LibraryAppController_registerPublisher6_invoker.call(LibraryAppController_0.registerPublisher)
       }
   
     // @LINE:14
-    case controllers_Assets_versioned5_route(params@_) =>
+    case controllers_LibraryAppController_registerPublisherPost7_route(params@_) =>
+      call { 
+        controllers_LibraryAppController_registerPublisherPost7_invoker.call(LibraryAppController_0.registerPublisherPost)
+      }
+  
+    // @LINE:17
+    case controllers_Assets_versioned8_route(params@_) =>
       call(Param[String]("path", Right("/public")), params.fromPath[Asset]("file", None)) { (path, file) =>
-        controllers_Assets_versioned5_invoker.call(Assets_1.versioned(path, file))
+        controllers_Assets_versioned8_invoker.call(Assets_1.versioned(path, file))
       }
   }
 }

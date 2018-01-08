@@ -28,12 +28,11 @@ object registerPublisher extends _root_.play.twirl.api.BaseScalaTemplate[play.tw
 Seq[Any](format.raw/*4.81*/("""
 
 """),_display_(/*6.2*/main("Register Publisher")/*6.28*/ {_display_(Seq[Any](format.raw/*6.30*/("""
-	
-	"""),_display_(/*8.3*/b3/*8.5*/.form(action = controllers.routes.LibraryAppController.registerPublisherPost())/*8.84*/ {_display_(Seq[Any](format.raw/*8.86*/("""
-	  """),_display_(/*9.5*/CSRF/*9.9*/.formField),format.raw/*9.19*/("""
-	  """),_display_(/*10.5*/b3/*10.7*/.text(publisherForm("name"), '_label -> "Publisher Name")),format.raw/*10.64*/("""
-	  """),_display_(/*11.5*/b3/*11.7*/.submit('class -> "btn btn-default")/*11.43*/{_display_(Seq[Any](format.raw/*11.44*/(""" """),format.raw/*11.45*/("""Register """)))}),format.raw/*11.55*/("""
-	""")))}),format.raw/*12.3*/("""
+	"""),_display_(/*7.3*/b3/*7.5*/.form(action = controllers.routes.LibraryAppController.registerPublisherPost())/*7.84*/ {_display_(Seq[Any](format.raw/*7.86*/("""
+	  """),_display_(/*8.5*/CSRF/*8.9*/.formField),format.raw/*8.19*/("""
+	  """),_display_(/*9.5*/b3/*9.7*/.text(publisherForm("name"), '_label -> "Publisher Name")),format.raw/*9.64*/("""
+	  """),_display_(/*10.5*/b3/*10.7*/.submit('class -> "btn btn-default")/*10.43*/{_display_(Seq[Any](format.raw/*10.44*/(""" """),format.raw/*10.45*/("""Register """)))}),format.raw/*10.55*/("""
+	""")))}),format.raw/*11.3*/("""
 """)))}))
       }
     }
@@ -50,11 +49,11 @@ Seq[Any](format.raw/*4.81*/("""
 
               /*
                   -- GENERATED --
-                  DATE: Sun Jan 07 18:39:14 KST 2018
+                  DATE: Sun Jan 07 21:29:43 KST 2018
                   SOURCE: /Users/kpyancey/Projects/Library-Demo-for-OOD/app/views/registerPublisher.scala.html
-                  HASH: 50daad96a91be8a08a6e54122173a674d6805e73
-                  MATRIX: 432->1|475->39|836->57|1010->136|1038->139|1072->165|1111->167|1141->172|1150->174|1237->253|1276->255|1306->260|1317->264|1347->274|1378->279|1388->281|1466->338|1497->343|1507->345|1552->381|1591->382|1620->383|1661->393|1694->396
-                  LINES: 17->1|18->2|23->4|28->4|30->6|30->6|30->6|32->8|32->8|32->8|32->8|33->9|33->9|33->9|34->10|34->10|34->10|35->11|35->11|35->11|35->11|35->11|35->11|36->12
+                  HASH: c747fa0fa78981a7884b1226db0298e5e499ae17
+                  MATRIX: 432->1|475->39|836->57|1010->136|1038->139|1072->165|1111->167|1139->170|1148->172|1235->251|1274->253|1304->258|1315->262|1345->272|1375->277|1384->279|1461->336|1492->341|1502->343|1547->379|1586->380|1615->381|1656->391|1689->394
+                  LINES: 17->1|18->2|23->4|28->4|30->6|30->6|30->6|31->7|31->7|31->7|31->7|32->8|32->8|32->8|33->9|33->9|33->9|34->10|34->10|34->10|34->10|34->10|34->10|35->11
                   -- GENERATED --
               */
           

@@ -7,23 +7,25 @@ class ISBN private(val serialNumber : Long) {
   def digits = digitsOf(serialNumber, 12)
   
   val checksum =
-    10 - digits.zipWithIndex.map{ case(x, y) => x * (if(y % 2 == 1) 1 else 3) }.sum % 10
+    (10 - (digits.zipWithIndex.map{ case(x, y) => x * (if(y % 2 == 0) 1 else 3) }.sum % 10)) % 10
+  
+  override def toString =
+    serialNumber.toString + "-" + checksum.toString
 }
 
 object ISBN {
-  private val patternRegex = """([0-9](-| )?){12}[0-9xX]""".r
+  private val PatternRegex = """([0-9](-| )?){12}[0-9]""".r
   
   def tryParse(string : String) : CheckedConversion[ISBN] = {
-    string.trim() match {
-      case patternRegex.anchored() =>
+    if(string.trim().matches("""([0-9](-| )?){12}[0-9xX]""")) {
         val canonicalString = string.replaceAll(" ", "").replaceAll("-", "")
         val isbn = new ISBN(canonicalString.substring(0, 12).toLong)
-        val checksum = canonicalString.charAt(12).toInt
+        val checksum = canonicalString.charAt(12).toString.toInt
         if(checksum != isbn.checksum)
           InvalidChecksumError(checksum, isbn.checksum)
         else
           Success(isbn)
-      case _ =>
+  } else {
         InvalidFormatError("Invalid format.  Expected 13 digits.  Dashes and spaces are allowed.")
     }
   }
