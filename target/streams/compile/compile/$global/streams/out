@@ -1,7 +1,0 @@
-[0m[[0m[33mwarn[0m] [0m[0m/Users/kpyancey/Projects/Library-Demo-for-OOD/app/controllers/AuthenticatedAction.scala:9:37: lazy value username in object Security is deprecated (since 2.6.0): Security.username is deprecated.[0m
-[0m[[0m[33mwarn[0m] [0m[0m    if(request.session.get(Security.username).isEmpty) {[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                    ^[0m
-[0m[[0m[33mwarn[0m] [0m[0m/Users/kpyancey/Projects/Library-Demo-for-OOD/app/controllers/LibraryAppController.scala:41:76: lazy value username in object Security is deprecated (since 2.6.0): Security.username is deprecated.[0m
-[0m[[0m[33mwarn[0m] [0m[0m          Redirect(routes.LibraryAppController.index).withSession(Security.username -> loginData._1).flashing("success" -> "Logged in.")[0m
-[0m[[0m[33mwarn[0m] [0m[0m                                                                           ^[0m
-[0m[[0m[33mwarn[0m] [0m[0mtwo warnings found[0m

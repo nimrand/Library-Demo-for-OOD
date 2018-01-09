@@ -30,28 +30,35 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   
   val publishers = TableQuery[PublisherTable]
   
-  def statusCodeToBookStatus(statusCode : Int) : BookStatus =
-    if(statusCode == 0) {
-      BookStatus.Available
-    } else if(statusCode == 1) {
-      BookStatus.CheckedOut
-    } else if(statusCode == 2) {
-      BookStatus.Lost
-    } else {
-      BookStatus.Disposed
-    }
+  implicit class RichBookStatus(status : BookStatus) {
+    def toCode =
+      status match {
+        case BookStatus.Available => 0
+        case BookStatus.CheckedOut => 1
+        case BookStatus.Lost => 2
+        case BookStatus.Disposed => 3
+      }
+  }
   
-  def bookStatusToStatusCode(status : BookStatus) : Int =
-    status match {
-    case BookStatus.Available => 0
-    case BookStatus.CheckedOut => 1
-    case BookStatus.Lost => 2
-    case BookStatus.Disposed => 3
-    }
+  implicit class RichStatusCode(statusCode : Int) {
+    def toStatus =
+      if(statusCode == 0) {
+        BookStatus.Available
+      } else if(statusCode == 1) {
+        BookStatus.CheckedOut
+      } else if(statusCode == 2) {
+        BookStatus.Lost
+      } else {
+        BookStatus.Disposed
+      }
+  }
   
   case class BookRecord(id : BookID, title : String, isbn : ISBN, price : BigDecimal, keywords : Seq[String], description : String, callNumber : String, publicationDate : LocalDate, publisherID : PublisherID, statusCode : Int) {
     def toBookListing =
-      BookListing(id, title, keywords, description, isbn, callNumber, statusCodeToBookStatus(statusCode))
+      BookListing(id, title, keywords, description, isbn, callNumber, statusCode.toStatus)
+    
+    def toBook(publisher : Publisher) =
+      new Book(id, title, isbn, price, keywords, description, callNumber, publicationDate, publisher, statusCode.toStatus)
   }
   
   class BookTable(tag: Tag) extends Table[BookRecord](tag, "Book") {
