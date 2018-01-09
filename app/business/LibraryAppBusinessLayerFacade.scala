@@ -115,6 +115,6 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
   def getAuthors() : Future[Seq[Author]] =
     repository.getAuthors().execute()
   
-  def createAuthor(name : PersonName) : Future[AuthorID] =
+  def registerAuthor(name : PersonName) : Future[AuthorID] =
     repository.createAuthor(name).execute()
 }

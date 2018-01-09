@@ -13,6 +13,7 @@ object Forms {
   val bookForm = Form(
     mapping(
       "title" -> nonEmptyText(maxLength=256),
+      "authorID" -> number.transform[AuthorID](id => AuthorID(id), id => id.asInt),
       "publicationDate" -> localDate,
       "description" -> text,
       "isbn" -> nonEmptyText.verifying("Must be a valid 13-digit ISBN number.", isbn => ISBN.tryParse(isbn).successful).transform[ISBN](s => ISBN.tryParse(s).get, isbn => isbn.toString),
@@ -53,5 +54,15 @@ object Forms {
       "username" -> text,
       "password" -> text
     )
+  )
+  
+  val registerAuthorForm = Form[PersonName](
+      mapping(
+          "firstName" -> text(maxLength=256),
+          "middleName" -> text(maxLength=256),
+          "lastName" -> nonEmptyText(maxLength=256),
+          "suffixName" -> text(maxLength=256),
+          "titles" -> tokens(256)
+      ) (PersonName.apply) (PersonName.unapply) // { (firstName, middleName, lastName, suffixName, titles) => { PersonName(firstName, middleName, lastName, suffixName, titles) } (name => Some((name.firstName, name.middleName, name.lastName, name.suffixName, name.titles)))
   )
 }

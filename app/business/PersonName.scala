@@ -7,6 +7,6 @@ case class PersonName(val firstName : String, val middleName : String, val lastN
     (Seq(firstName, middleName, lastName, suffixName).filter(_ != "") ++ titles).mkString(" ")
 }
 
-object PersonName {
+object PersonName extends ((String, String, String, String, Seq[String]) => PersonName) {
   val empty = PersonName("", "", "", "", Seq())
 }

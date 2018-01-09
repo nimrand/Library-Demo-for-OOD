@@ -1,12 +1,14 @@
 @import business.EditBookDTO
 @import business.Publisher
 @import business.BookID
+@import business.Author
+@import business.PersonName
 @import scala.collection.immutable.Seq
 
-@(bookID : BookID, form : Form[EditBookDTO], publisherForm : Form[String], publishers : Seq[Publisher])(implicit messages: Messages, req: RequestHeader)
+@(bookID : BookID, form : Form[EditBookDTO], authorForm : Form[PersonName], publisherForm : Form[String], authors : Seq[Author], publishers : Seq[Publisher])(implicit messages: Messages, req: RequestHeader)
 
 @main("Edit Book") {
 	<h1>Edit Book</h1>
 	@formErrors(form)
-	@bookForm(form, publisherForm, publishers, "Save Changes", controllers.routes.LibraryAppController.editBookPost(bookID))
+	@bookForm(form, authorForm, publisherForm, authors, publishers, "Save Changes", controllers.routes.LibraryAppController.editBookPost(bookID))
 }

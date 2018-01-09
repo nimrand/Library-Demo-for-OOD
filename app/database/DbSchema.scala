@@ -64,18 +64,19 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   
   implicit val bookStatusColumnType = MappedColumnType.base[BookStatus, Int](_.toCode, _.toStatus)
   
-  case class BookRecord(id : BookID, title : String, isbn : ISBN, price : BigDecimal, keywords : Seq[String], description : String, callNumber : String, publicationDate : LocalDate, publisherID : PublisherID, statusCode : BookStatus) {
-    def toBookListing =
-      BookListing(id, title, keywords, description, isbn, callNumber, statusCode)
+  case class BookRecord(id : BookID, title : String, authorID : AuthorID, isbn : ISBN, price : BigDecimal, keywords : Seq[String], description : String, callNumber : String, publicationDate : LocalDate, publisherID : PublisherID, statusCode : BookStatus) {
+    def toBookListing(author : Author) =
+      BookListing(id, title, author, keywords, description, isbn, callNumber, statusCode)
     
-    def toBook(publisher : Publisher) =
-      new Book(id, title, isbn, price, keywords, description, callNumber, publicationDate, publisher, statusCode)
+    def toBook(author : Author, publisher : Publisher) =
+      new Book(id, title, author, isbn, price, keywords, description, callNumber, publicationDate, publisher, statusCode)
   }
   
   class BookTable(tag: Tag) extends Table[BookRecord](tag, "Book") {
     def id = column[BookID]("id", O.PrimaryKey, O.AutoInc)
     
     def title = column[String]("title")
+    def authorID = column[AuthorID]("author_id")
     def isbn = column[ISBN]("isbn")
     def price = column[BigDecimal]("price")
     def keywords = column[Seq[String]]("keywords")
@@ -87,7 +88,7 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
     
     //def publisher = foreignKey("", publisherID, publishers)(_.id)
     
-    def * = (id, title, isbn, price, keywords, description, callNumber, publicationDate, publisherID, statusCode) <> (BookRecord.tupled, BookRecord.unapply)
+    def * = (id, title, authorID, isbn, price, keywords, description, callNumber, publicationDate, publisherID, statusCode) <> (BookRecord.tupled, BookRecord.unapply)
   }
   
   val books = TableQuery[BookTable]

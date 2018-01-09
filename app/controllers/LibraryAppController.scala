@@ -61,8 +61,10 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
   }
   
   private def registerBookView(bookForm : Form[EditBookDTO]) (implicit req: RequestHeader) =
-    businessApi.getPublishers().map{ publishers =>
-      views.html.registerBook(bookForm, registerPublisherForm, publishers)
+    businessApi.getAuthors().flatMap{ authors =>
+      businessApi.getPublishers().map{ publishers =>
+        views.html.registerBook(bookForm, registerAuthorForm, registerPublisherForm, authors, publishers)
+      }
     }
   
   def registerBook() = authenticatedAction.async { implicit request =>
@@ -79,8 +81,10 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
   }
   
   private def editBookView(bookID : BookID, bookForm : Form[EditBookDTO]) (implicit req: RequestHeader) =
-    businessApi.getPublishers().map{ publishers =>
-      views.html.editBook(bookID, bookForm, registerPublisherForm, publishers)
+    businessApi.getAuthors().flatMap{ authors =>
+      businessApi.getPublishers().map{ publishers =>
+        views.html.editBook(bookID, bookForm, registerAuthorForm, registerPublisherForm, authors, publishers)
+      }
     }
   
   def editBook(bookID : BookID) = authenticatedAction.async { implicit request =>
@@ -210,6 +214,13 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
         businessApi.reportBookReturned(bookID, returnedDate).map { _ =>
           Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book reported returned.")
         }
+    )
+  }
+  
+  def registerAuthorPost = authenticatedAction.async { implicit request =>
+    registerAuthorForm.bindFromRequest.fold(
+      formWithErrors => Future.successful(BadRequest(Json.obj("message" -> formWithErrors.errors.map(_.format)))),
+      personName => businessApi.registerAuthor(personName).map { authorID => Ok(Json.obj("authorID" -> authorID.toString, "name" -> personName.toString)) }
     )
   }
 }

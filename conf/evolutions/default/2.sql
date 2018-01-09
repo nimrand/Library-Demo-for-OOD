@@ -18,6 +18,7 @@ CREATE TABLE Author (
 CREATE TABLE Book (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
     title varchar(256) NOT NULL,
+    author_id INT NOT NULL,
     isbn varchar(13) NOT NULL,
     price REAL NOT NULL,
     keywords TEXT NOT NULL,
@@ -27,13 +28,6 @@ CREATE TABLE Book (
     publisher_id INTEGER NOT NULL,
     status_code INTEGER NOT NULL,
     FOREIGN KEY(publisher_id) REFERENCES Publisher(id)
-);
-
-CREATE TABLE BookAuthor (
-	author_id INTEGER NOT NULL,
-	book_id INTEGER NOT NULL,
-	FOREIGN KEY(author_id) REFERENCES Author(id),
-	FOREIGN KEY(book_id) REFERENCES Book(id)
 );
 
 # --- !Downs

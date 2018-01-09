@@ -19,10 +19,10 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   implicit class ExtendedEditBookDTO(book : EditBookDTO) {
     def fields =
-      (book.title, book.isbn, book.price, book.keywords, book.description, book.callNumber, book.publicationDate, book.publisherID)
+      (book.title, book.isbn, book.authorID, book.price, book.keywords, book.description, book.callNumber, book.publicationDate, book.publisherID)
   
     def insertFields =
-      (book.title, book.isbn, book.price, book.keywords, book.description, book.callNumber, book.publicationDate, book.publisherID, BookStatus.Available)
+      (book.title, book.isbn, book.authorID, book.price, book.keywords, book.description, book.callNumber, book.publicationDate, book.publisherID, BookStatus.Available)
   }
   
   implicit class ExtendedPersonName(name : PersonName) {
@@ -58,7 +58,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   def createBook(book : EditBookDTO) : UnitOfWork[BookID] =
     UnitOfWork {
-      (books.map(p => (p.title, p.isbn, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID, p.statusCode))
+      (books.map(p => (p.title, p.isbn, p.authorID, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID, p.statusCode))
           returning books.map(_.id)
           into ((fields, id) => id)
       ) += book.insertFields
@@ -67,15 +67,17 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   def getBook(bookID : BookID) : UnitOfWork[Book] =
     UnitOfWork {
       books.filter(_.id === bookID).result.head.flatMap{ bookRecord =>
-        publishers.filter(_.id === bookRecord.publisherID).result.head.map{ publisher =>
-          bookRecord.toBook(publisher)
+        (authors.filter(_.id === bookRecord.authorID) join personNames on (_.nameID === _.id)).result.head.flatMap{ authorRecord =>
+          publishers.filter(_.id === bookRecord.publisherID).result.head.map{ publisher =>
+            bookRecord.toBook(new Author(authorRecord._1._1, authorRecord._2._2), publisher)
+          }
         }
       }
     }
   
   def editBook(bookID : BookID, book : EditBookDTO) : UnitOfWork[Unit] =
     UnitOfWork {
-      books.filter(_.id === bookID).map(p => (p.title, p.isbn, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID)).update(book.fields).map(_ => ())
+      books.filter(_.id === bookID).map(p => (p.title, p.isbn, p.authorID, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID)).update(book.fields).map(_ => ())
     }
   
   def getBookStatus(bookID : BookID) : UnitOfWork[BookStatus] =
@@ -104,7 +106,12 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       publishers.filter(p => p.name.like(likeExpression)).map(_.id).result.flatMap { matchingPublisherIDs => 
         books.filter(b => b.publisherID.inSet(matchingPublisherIDs)).map(_.id).result.flatMap { secondMatchingBookSet =>
           val bookIDs = Set(firstMatchingBookSet ++ secondMatchingBookSet : _*)
-          books.filter(_.id.inSet(bookIDs)).result.map(_.to[Seq].map(_.toBookListing))
+          (for {
+            book <- books.filter(_.id.inSet(bookIDs))
+            author <- authors if book.authorID === author.id
+            name <- personNames if author.nameID === name.id
+          } yield (book, name)).result.map(_.to[Seq].map{ case (book, (nameID, name)) => book.toBookListing(new Author(book.authorID, name)) })
+          //books.filter(_.id.inSet(bookIDs)).join(authors).on(_.authorID === _.id).join(personNames).on{ case ((book, author), name) => author.nameID === name.id }.result.map(_.to[Seq].map(_.toBookListing))
         }
       }
     }
@@ -149,8 +156,10 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     UnitOfWork {
       books.filter(_.callNumber === callNumber).result.headOption.flatMap{
         case Some(bookRecord) =>
-          publishers.filter(_.id === bookRecord.publisherID).result.head.map{ publisher =>
-            Some(bookRecord.toBook(publisher))
+          (authors.filter(_.id === bookRecord.authorID) join personNames on (_.nameID === _.id)).result.head.flatMap{ authorRecord =>
+            publishers.filter(_.id === bookRecord.publisherID).result.head.map{ publisher =>
+              Some(bookRecord.toBook(new Author(authorRecord._1._1, authorRecord._2._2), publisher))
+            }
           }
         case None =>
           slick.dbio.SuccessAction(None)

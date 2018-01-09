@@ -21,6 +21,7 @@ GET     /books/loan/:id             controllers.LibraryAppController.loanBook(id
 POST    /books/loan/:id             controllers.LibraryAppController.loanBookPost(id : business.BookID)
 GET     /books/reportReturned/:id   controllers.LibraryAppController.reportBookReturned(id : business.BookID)
 POST    /books/reportReturned/:id   controllers.LibraryAppController.reportBookReturnedPost(id : business.BookID)
+POST    /authors/register           controllers.LibraryAppController.registerAuthorPost
 GET     /signin                     controllers.LibraryAppController.login
 POST    /signin                     controllers.LibraryAppController.loginPost
 GET     /signout                    controllers.LibraryAppController.logout

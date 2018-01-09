@@ -1,11 +1,13 @@
 @import business.EditBookDTO
 @import business.Publisher
+@import business.Author
+@import business.PersonName
 @import scala.collection.immutable.Seq
 
-@(form : Form[EditBookDTO], publisherForm : Form[String], publishers : Seq[Publisher])(implicit messages: Messages, req: RequestHeader)
+@(form : Form[EditBookDTO], authorForm : Form[PersonName], publisherForm : Form[String], authors : Seq[Author], publishers : Seq[Publisher])(implicit messages: Messages, req: RequestHeader)
 
 @main("Register Book") {
 	<h1>Register Book</h1>
 	@formErrors(form)
-	@bookForm(form, publisherForm, publishers, "Register Book", controllers.routes.LibraryAppController.registerBookPost())
+	@bookForm(form, authorForm, publisherForm, authors, publishers, "Register Book", controllers.routes.LibraryAppController.registerBookPost())
 }
