@@ -11,16 +11,26 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
     repository.createPublisher(name).execute()
     
   def registerBook(book : EditBookDTO) : Future[BookID] =
-    repository.createBook(book).execute()
+    repository.getBookByCallNumber(book.callNumber).flatMap {
+      case Some(_) =>
+        throw new BusinessException(s"A book with that call number already exists.  If you are adding a second copy of the book to the system, please use '${book.callNumber}B' instead.")
+      case None =>
+        repository.createBook(book)
+    }.execute()
   
   def getPublishers() : Future[Seq[Publisher]] =
     repository.getPublishers().execute()
     
   def getBook(bookID : BookID) : Future[Book] =
-    repository.retrieveBook(bookID).execute()
+    repository.getBook(bookID).execute()
   
   def editBook(bookID : BookID, book : EditBookDTO) : Future[Unit] =
-    repository.editBook(bookID, book).execute()
+    repository.getBookByCallNumber(book.callNumber).flatMap { otherBook =>
+      if(otherBook.map(_.id).getOrElse(bookID) != bookID)
+        throw new BusinessException(s"A book with that call number already exists.  If you are adding a second copy of the book to the system, please use '${book.callNumber}B' instead.")
+      else
+        repository.editBook(bookID, book)
+    }.execute()
   
   def registerLibraryMember(libraryMember : EditLibraryMemberDTO) : Future[LibraryMemberID] =
     repository.createLibraryMember(libraryMember).execute()
@@ -32,21 +42,61 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
     repository.getLibraryMembers().execute()
     
   def reportBookLost(bookID : BookID) : Future[Unit] =
-    repository.setBookStatus(bookID, BookStatus.Lost).execute()
+    repository.getBookStatus(bookID).flatMap { bookStatus =>
+      if(bookStatus == BookStatus.Disposed)
+        throw new BusinessException("Book is disposed.")
+      repository.setBookStatus(bookID, BookStatus.Lost)
+    }.execute()
     
   def reportBookFound(bookID : BookID) : Future[Unit] =
-    repository.setBookStatus(bookID, BookStatus.Available).execute()
+    repository.getBookStatus(bookID).flatMap { bookStatus =>
+      if(bookStatus != BookStatus.Lost)
+        throw new BusinessException("Book isn't lost.")
+      repository.getBookLoans(bookID).flatMap { loans =>
+        if(loans.isEmpty || !loans.head.returnedDate.isEmpty)
+          repository.setBookStatus(bookID, BookStatus.Available)
+        else
+          repository.setBookStatus(bookID, BookStatus.CheckedOut)
+      }
+    }.execute()
     
   def disposeBook(bookID : BookID) : Future[Unit] =
-    repository.setBookStatus(bookID, BookStatus.Disposed).execute()
+    repository.getBookStatus(bookID).flatMap { bookStatus =>
+      if(bookStatus != BookStatus.Available)
+        throw new BusinessException("Book must be available in order to be disposed.")
+      repository.setBookStatus(bookID, BookStatus.Disposed)
+    }.execute()
     
   def loanBook(bookID : BookID, loan : LoanBookDTO) (implicit executor : scala.concurrent.ExecutionContext) : Future[BookLoanID] =
-    repository.createBookLoan(bookID, loan).flatMap{ loanID =>
-      repository.setBookStatus(bookID, BookStatus.CheckedOut).map(_ => loanID)
-    }.execute()
+    if(loan.loanedDate.isAfter(loan.dueDate))
+      Future.failed(new BusinessException("Due date must be on or after loaned date."))
+    else
+      repository.getLibraryMember(loan.memberID).flatMap { member =>
+        if(member.joinedDate.isAfter(loan.loanedDate))
+            throw new BusinessException(s"The loaned date must be on or after the member's joined date, ${member.joinedDate}.")
+        repository.getLibraryMemberLoans(loan.memberID).flatMap { memberLoans =>
+          if(memberLoans.filter(_.returnedDate == None).size >= 5)
+            throw new BusinessException("Member may not have more than 5 open book loans at a time.")
+          repository.getBookStatus(bookID).flatMap { bookStatus =>
+            if(bookStatus != BookStatus.Available)
+              throw new BusinessException("Book is not availabled to be loaned.")
+            repository.getBookLoans(bookID).flatMap { loans =>
+              if(!loans.isEmpty && loans.head.returnedDate.get.isAfter(loan.loanedDate))
+                throw new BusinessException(s"The loaned date must be on or after the book's last returned date, ${loans.head.returnedDate.get}.")
+              repository.createBookLoan(bookID, loan).flatMap{ loanID =>
+                repository.setBookStatus(bookID, BookStatus.CheckedOut).map(_ => loanID)
+              }
+            }
+          }
+        }
+      }.execute()
     
   def reportBookReturned(bookID : BookID, returnedDate : LocalDate)  (implicit executor : scala.concurrent.ExecutionContext) : Future[Unit] =
     repository.getBookLoans(bookID).flatMap { loans =>
+      if(loans.isEmpty)
+        throw new BusinessException("The book is not loaned out.")
+      if(loans.head.loanedDate.isAfter(returnedDate))
+        throw new BusinessException("The returned date must on or after the loaned date.")
       repository.setReturnedDate(loans.head.id, returnedDate).flatMap { _ =>
         repository.setBookStatus(bookID, BookStatus.Available)
       }

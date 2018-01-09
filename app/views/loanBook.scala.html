@@ -12,7 +12,7 @@
 	<h1>Loan Book - @book.title</h1>
 	@b3.form(action = routes.LibraryAppController.loanBookPost(book.id)) {
 	  @CSRF.formField
-	  @b3.select(loanBookForm("memberID"), libraryMembers.map(m => (m.id.asInt.toString, m.name.toString)), '_label -> "Loaned To")
+	  @b3.select(loanBookForm("memberID"), libraryMembers.map(m => (m.id.asInt.toString, m.toString)), '_label -> "Loaned To")
 	  <a href="@routes.LibraryAppController.registerLibraryMember">Register New Member</a><br /><br />
 	  @b3.date(loanBookForm("loanedDate"), '_label -> "Date Loaned")
 	  @b3.date(loanBookForm("dueDate"), '_label -> "Due Date")

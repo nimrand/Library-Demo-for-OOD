@@ -7,5 +7,6 @@
 
 @main("Edit Book") {
 	<h1>Edit Book</h1>
+	@formErrors(form)
 	@bookForm(form, publisherForm, publishers, "Save Changes", controllers.routes.LibraryAppController.editBookPost(bookID))
 }

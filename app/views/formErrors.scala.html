@@ -2,9 +2,11 @@
 @(form : Form[_])(implicit messages: Messages, req: RequestHeader)
 
 @if(form.hasGlobalErrors) {
-  <ul>
+  <div class="alert alert-danger">
   @for(error <- form.globalErrors) {
-    <li>@error.format</li>
+    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+	<span class="sr-only">Error:</span>
+	@error.format<br />
   }
-  </ul>
+  </div>
 }

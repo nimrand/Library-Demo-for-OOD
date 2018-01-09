@@ -7,9 +7,23 @@
 GET     /                           controllers.LibraryAppController.index
 GET     /books/register             controllers.LibraryAppController.registerBook
 POST    /books/register             controllers.LibraryAppController.registerBookPost
-GET		/books/details/:id          controllers.LibraryAppController.viewBookDetails(id)
-GET     /publishers/register        controllers.LibraryAppController.registerPublisher
+GET		/books/details/:id          controllers.LibraryAppController.viewBookDetails(id : business.BookID)
+GET		/books/edit/:id             controllers.LibraryAppController.editBook(id : business.BookID)
+POST		/books/edit/:id             controllers.LibraryAppController.editBookPost(id : business.BookID)
+GET     /books/search               controllers.LibraryAppController.searchBooks
+POST    /books/reportLost/:id       controllers.LibraryAppController.reportBookLost(id : business.BookID)
+POST    /books/reportFound/:id      controllers.LibraryAppController.reportBookFound(id : business.BookID)
+POST    /books/dispose/:id          controllers.LibraryAppController.disposeBook(id : business.BookID)
 POST    /publishers/register        controllers.LibraryAppController.registerPublisherPost
+GET     /libraryMembers/register    controllers.LibraryAppController.registerLibraryMember
+POST    /libraryMembers/register    controllers.LibraryAppController.registerLibraryMemberPost
+GET     /books/loan/:id             controllers.LibraryAppController.loanBook(id : business.BookID)
+POST    /books/loan/:id             controllers.LibraryAppController.loanBookPost(id : business.BookID)
+GET     /books/reportReturned/:id   controllers.LibraryAppController.reportBookReturned(id : business.BookID)
+POST    /books/reportReturned/:id   controllers.LibraryAppController.reportBookReturnedPost(id : business.BookID)
+GET     /signin                     controllers.LibraryAppController.login
+POST    /signin                     controllers.LibraryAppController.loginPost
+GET     /signout                    controllers.LibraryAppController.logout
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

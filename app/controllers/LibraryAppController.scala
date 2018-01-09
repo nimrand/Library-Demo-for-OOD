@@ -16,8 +16,11 @@ import database.DbAuthenticationProvider
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
+ * The controller provides the glue code to bind together business operations provided by the business layer, with HTTP handling and HTML views.  It
+ * creates an `Action`s to handle HTTP requests.  Actions that involve the business layer execute asynchronously using `Future`s so that web handlings
+ * threads do not block on database operations.
+ * 
+ * Objects that the controller uses to interact with the business and authentication APIs are provided through injection.
  */
 @Singleton
 class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : LibraryAppBusinessLayerFacade, authenticationProvider : DbAuthenticationProvider, authenticatedAction : AuthenticatedAction)(implicit ec: ExecutionContext) extends AbstractController(cc) with I18nSupport {
@@ -52,36 +55,43 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
     )
   }
   
-  def registerBook() = authenticatedAction.async { implicit request =>
+  private implicit class ExtendedForm[T](form : Form[T]) {
+    def businessFold[U](onError : Form[T] => Future[U], onSuccess : T => Future[U]) =
+      form.fold(onError, data => onSuccess(data).recoverWith{ case BusinessException(message) => onError(form.withGlobalError(message)) })
+  }
+  
+  private def registerBookView(bookForm : Form[EditBookDTO]) (implicit req: RequestHeader) =
     businessApi.getPublishers().map{ publishers =>
-      Ok(views.html.registerBook(bookForm, registerPublisherForm, publishers))
+      views.html.registerBook(bookForm, registerPublisherForm, publishers)
     }
+  
+  def registerBook() = authenticatedAction.async { implicit request =>
+    registerBookView(bookForm).map(Ok(_))
   }
   
   def registerBookPost() = authenticatedAction.async { implicit request =>
-    bookForm.bindFromRequest.fold(
-      formWithErrors => businessApi.getPublishers().map{ publishers =>
-        BadRequest(views.html.registerBook(formWithErrors, registerPublisherForm, publishers))
-      },
+    bookForm.bindFromRequest.businessFold(
+      formWithErrors => registerBookView(formWithErrors).map(BadRequest(_)),
       registerBookRequest => businessApi.registerBook(registerBookRequest).map{ bookID =>
         Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book registered.")
       }
     )
   }
   
+  private def editBookView(bookID : BookID, bookForm : Form[EditBookDTO]) (implicit req: RequestHeader) =
+    businessApi.getPublishers().map{ publishers =>
+      views.html.editBook(bookID, bookForm, registerPublisherForm, publishers)
+    }
+  
   def editBook(bookID : BookID) = authenticatedAction.async { implicit request =>
     businessApi.getBook(bookID).flatMap { book =>
-      businessApi.getPublishers().map{ publishers =>
-        Ok(views.html.editBook(bookID, bookForm.fill(book.toEditDTO), registerPublisherForm, publishers))
-      }
+      editBookView(bookID, bookForm.fill(book.toEditDTO)).map(Ok(_))
     }
   }
   
   def editBookPost(bookID : BookID) = authenticatedAction.async { implicit request =>
-    bookForm.bindFromRequest.fold(
-      formWithErrors => businessApi.getPublishers().map{ publishers =>
-        BadRequest(views.html.editBook(bookID, formWithErrors, registerPublisherForm, publishers))
-      },
+    bookForm.bindFromRequest.businessFold(
+      formWithErrors => editBookView(bookID, formWithErrors).map(BadRequest(_)),
       editBookRequest => businessApi.editBook(bookID, editBookRequest).map { _ =>
         Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book updated.")
       }
@@ -91,18 +101,24 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
   def reportBookLost(bookID : BookID) = authenticatedAction.async { implicit request =>
     businessApi.reportBookLost(bookID).map { _ =>
       Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book reported lost.")
+    }.recover {
+      case BusinessException(message) => Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("error" -> message)
     }
   }
   
   def reportBookFound(bookID : BookID) = authenticatedAction.async { implicit request =>
     businessApi.reportBookFound(bookID).map { _ =>
       Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book reported found.")
+    }.recover {
+      case BusinessException(message) => Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("error" -> message)
     }
   }
   
   def disposeBook(bookID : BookID) = authenticatedAction.async { implicit request =>
     businessApi.disposeBook(bookID).map { _ =>
       Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book disposed.")
+    }.recover {
+      case BusinessException(message) => Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("error" -> message)
     }
   }
   
@@ -127,17 +143,15 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
       )
     }
   }
-  /*
-  def registerPublisher() = Action { implicit request =>
-    Ok(views.html.registerPublisher(registerPublisherForm))
-  }*/
   
   def registerPublisherPost() = authenticatedAction.async { implicit request =>
     registerPublisherForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.registerPublisher(formWithErrors))),
+        formWithErrors => Future.successful(BadRequest(Json.obj("message" -> formWithErrors.errors.map(_.format)))),
         publisherName => {
           businessApi.registerPublisher(publisherName).map{ publisherID =>
             Ok(Json.obj("publisherID" -> publisherID.asInt))
+          }.recover {
+            case BusinessException(message) => BadRequest(Json.obj("message" -> message))
           }
         }
     )
@@ -148,52 +162,50 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
   }
   
   def registerLibraryMemberPost() = authenticatedAction.async { implicit request =>
-    registerLibraryMemberForm.bindFromRequest.fold(
+    registerLibraryMemberForm.bindFromRequest.businessFold(
         formWithErrors => Future.successful(BadRequest(views.html.registerLibraryMember(formWithErrors))),
         libraryMemberDTO => {
           businessApi.registerLibraryMember(libraryMemberDTO).map { libraryMemberID =>
-            Redirect(routes.LibraryAppController.index).flashing("success" -> "Library member registered.")
+            Redirect(routes.LibraryAppController.index).flashing("success" -> s"Library member registered with Member ID $libraryMemberID.")
           }
         }
     )
   }
   
-  def loanBook(bookID : BookID) = authenticatedAction.async { implicit request =>
+  private def loanBookView(bookID : BookID, loanForm : Form[LoanBookDTO]) (implicit req: RequestHeader) =
     businessApi.getBook(bookID).flatMap { book =>
       businessApi.getLibraryMembers().map { libraryMembers =>
-        val today = LocalDate.now
-        val defaultForm = loanBookForm.fill(LoanBookDTO(LibraryMemberID(0), today, today.plusDays(14)))
-        Ok(views.html.loanBook(defaultForm, book, libraryMembers))
+        views.html.loanBook(loanForm, book, libraryMembers)
       }
     }
+  
+  def loanBook(bookID : BookID) = authenticatedAction.async { implicit request =>
+    val today = LocalDate.now
+    val defaultForm = loanBookForm.fill(LoanBookDTO(LibraryMemberID(0), today, today.plusDays(14)))
+    loanBookView(bookID, defaultForm).map(Ok(_))
   }
   
   def loanBookPost(bookID : BookID) = authenticatedAction.async { implicit request =>
-    loanBookForm.bindFromRequest.fold(
-      formWithErrors => businessApi.getBook(bookID).flatMap { book =>
-        businessApi.getLibraryMembers().map { libraryMembers =>
-          BadRequest(views.html.loanBook(formWithErrors, book, libraryMembers))
-        }
-      },
+    loanBookForm.bindFromRequest.businessFold(
+      formWithErrors => loanBookView(bookID, formWithErrors).map(BadRequest(_)),
       loan => businessApi.loanBook(bookID, loan).map { _ =>
         Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book loaned.")
       }
     )
   }
   
-  def reportBookReturned(bookID : BookID) = authenticatedAction.async { implicit request =>
+  private def reportBookReturnedView(bookID : BookID, returnedForm : Form[LocalDate]) (implicit req: RequestHeader) =
     businessApi.getBook(bookID).map { book =>
-      val form = reportBookReturnedForm.fill(LocalDate.now)
-      Ok(views.html.reportBookReturned(form, book))
+      views.html.reportBookReturned(returnedForm, book)
     }
+  
+  def reportBookReturned(bookID : BookID) = authenticatedAction.async { implicit request =>
+    reportBookReturnedView(bookID, reportBookReturnedForm.fill(LocalDate.now)).map(Ok(_))
   }
   
   def reportBookReturnedPost(bookID : BookID) = authenticatedAction.async { implicit request =>
-    reportBookReturnedForm.bindFromRequest.fold(
-      formWithErrors => 
-        businessApi.getBook(bookID).map { book =>
-          BadRequest(views.html.reportBookReturned(formWithErrors, book))
-        },
+    reportBookReturnedForm.businessFold(
+      formWithErrors => reportBookReturnedView(bookID, formWithErrors).map(BadRequest(_)),
       returnedDate => 
         businessApi.reportBookReturned(bookID, returnedDate).map { _ =>
           Redirect(routes.LibraryAppController.viewBookDetails(bookID)).flashing("success" -> "Book reported returned.")

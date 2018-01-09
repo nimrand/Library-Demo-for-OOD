@@ -64,7 +64,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       ) += book.insertFields
     }
   
-  def retrieveBook(bookID : BookID) : UnitOfWork[Book] =
+  def getBook(bookID : BookID) : UnitOfWork[Book] =
     UnitOfWork {
       books.filter(_.id === bookID.asInt).result.head.flatMap{ bookRecord =>
         publishers.filter(_.id === bookRecord.publisherID.asInt).result.head.map{ publisher =>
@@ -76,6 +76,11 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   def editBook(bookID : BookID, book : EditBookDTO) : UnitOfWork[Unit] =
     UnitOfWork {
       books.filter(_.id === bookID.asInt).map(p => (p.title, p.isbn, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID)).update(book.fields).map(_ => ())
+    }
+  
+  def getBookStatus(bookID : BookID) : UnitOfWork[BookStatus] =
+    UnitOfWork {
+      books.filter(_.id === bookID.asInt).map(_.statusCode).result.head.map(_.toStatus)
     }
   
   def setBookStatus(bookID : BookID, status : BookStatus) : UnitOfWork[Unit] =
@@ -104,6 +109,11 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       (libraryMembers join personNames on (_.nameID === _.id)).result.map(_.map(fields => new LibraryMember(LibraryMemberID(fields._1._1), fields._2._2, fields._1._3)).to[Seq])
     }
   
+  def getLibraryMember(memberID : LibraryMemberID) : UnitOfWork[LibraryMember] =
+    UnitOfWork {
+      (libraryMembers.filter(_.id === memberID.asInt) join personNames on (_.nameID === _.id)).result.head.map(fields => new LibraryMember(LibraryMemberID(fields._1._1), fields._2._2, fields._1._3))
+    }
+  
   private def searchBooksByTerm(searchTerm : String) : DBIOAction[Seq[BookListing], NoStream, Effect.All] = {
     val likeExpression = s"%$searchTerm%"
     books.filter(b => b.title.like(likeExpression) || b.keywords.like(likeExpression) || b.description.like(likeExpression) || b.isbn.like(likeExpression) || b.callNumber.like(likeExpression)).map(_.id).result.flatMap { firstMatchingBookSet =>
@@ -124,14 +134,6 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
         allBooks.to[Seq].sortBy(book => relevance(book.bookID) * -1)
       }
     }
- /* 
-  {
-    Future.sequence(for(searchTerm <- searchTerms) yield searchBooksByTerm(searchTerm)).map { resultSets =>
-      val allBooks = resultSets.flatten.groupBy(_.bookID).mapValues(_.head).values
-      val relevance = resultSets.flatten.groupBy(_.bookID).mapValues(_.size)
-      allBooks.to[Seq].sortBy(book => relevance(book.bookID) * -1)
-    }
-  }*/
   
   def createBookLoan(bookID : BookID, loan : LoanBookDTO) : UnitOfWork[BookLoanID] =
     UnitOfWork {
@@ -144,13 +146,30 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   def getBookLoans(bookID : BookID) : UnitOfWork[Seq[BookLoan]] =
     UnitOfWork {
-      val bookIDInt = bookID.asInt
-      (bookLoans.filter(_.bookID === bookIDInt) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.id === _.id)).result }.map(
+      (bookLoans.filter(_.bookID === bookID.asInt) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.id === _.id)).result }.map(
+        _.to[Seq].map(fields => new BookLoan(BookLoanID(fields._1._1._1), BookID(fields._1._1._2), new LibraryMember(LibraryMemberID(fields._1._1._3), fields._2._2, fields._1._2._3), LocalDate.parse(fields._1._1._4, dateFormat), LocalDate.parse(fields._1._1._5, dateFormat), fields._1._1._6.map(LocalDate.parse(_, dateFormat)))).sortBy(_.loanedDate).reverse
+    )
+  
+  def getLibraryMemberLoans(libraryMemberID : LibraryMemberID) : UnitOfWork[Seq[BookLoan]] =
+    UnitOfWork {
+      (bookLoans.filter(_.memberID === libraryMemberID.asInt) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.id === _.id)).result }.map(
         _.to[Seq].map(fields => new BookLoan(BookLoanID(fields._1._1._1), BookID(fields._1._1._2), new LibraryMember(LibraryMemberID(fields._1._1._3), fields._2._2, fields._1._2._3), LocalDate.parse(fields._1._1._4, dateFormat), LocalDate.parse(fields._1._1._5, dateFormat), fields._1._1._6.map(LocalDate.parse(_, dateFormat)))).sortBy(_.loanedDate).reverse
     )
   
   def setReturnedDate(bookLoanID : BookLoanID, returnedDate : LocalDate) : UnitOfWork[Unit] =
     UnitOfWork {
       bookLoans.filter(_.id === bookLoanID.asInt).map(_.returnedDate).update(Some(returnedDate.format(dateFormat))).map(_ => ())
+    }
+  
+  def getBookByCallNumber(callNumber : String) : UnitOfWork[Option[Book]] =
+    UnitOfWork {
+      books.filter(_.callNumber === callNumber).result.headOption.flatMap{
+        case Some(bookRecord) =>
+          publishers.filter(_.id === bookRecord.publisherID.asInt).result.head.map{ publisher =>
+            Some(bookRecord.toBook(publisher))
+          }
+        case None =>
+          slick.dbio.SuccessAction(None)
+      }
     }
 }
