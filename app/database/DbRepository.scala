@@ -19,15 +19,15 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   implicit class ExtendedEditBookDTO(book : EditBookDTO) {
     def fields =
-      (book.title, book.isbn.toString, book.price.toString, book.keywords.mkString(" "), book.description, book.callNumber, book.publicationDate.format(dateFormat), book.publisherID.asInt)
+      (book.title, book.isbn, book.price, book.keywords, book.description, book.callNumber, book.publicationDate, book.publisherID)
   
     def insertFields =
-      (book.title, book.isbn.toString, book.price.toString, book.keywords.mkString(" "), book.description, book.callNumber, book.publicationDate.format(dateFormat), book.publisherID.asInt, 0)
+      (book.title, book.isbn, book.price, book.keywords, book.description, book.callNumber, book.publicationDate, book.publisherID, BookStatus.Available)
   }
   
   implicit class ExtendedPersonName(name : PersonName) {
     def fields =
-      (name.firstName, name.middleName, name.lastName, name.suffixName, name.titles.mkString(" "))
+      (name.firstName, name.middleName, name.lastName, name.suffixName, name.titles)
   }
   
   class UnitOfWork[T](private val dbAction : DBIOAction[T, NoStream, Effect.All]) {
@@ -48,7 +48,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   def createPublisher(name : String) : UnitOfWork[PublisherID] =
     UnitOfWork {
-      publishers.map(p => p.name) returning dbSchema.publishers.map(_.id) into ((name, id) => PublisherID(id)) += (name)
+      publishers.map(p => p.name) returning dbSchema.publishers.map(_.id) into ((name, id) => id) += (name)
     }
   
   def getPublishers() : UnitOfWork[Seq[Publisher]] =
@@ -60,14 +60,14 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     UnitOfWork {
       (books.map(p => (p.title, p.isbn, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID, p.statusCode))
           returning books.map(_.id)
-          into ((fields, id) => BookID(id))
+          into ((fields, id) => id)
       ) += book.insertFields
     }
   
   def getBook(bookID : BookID) : UnitOfWork[Book] =
     UnitOfWork {
-      books.filter(_.id === bookID.asInt).result.head.flatMap{ bookRecord =>
-        publishers.filter(_.id === bookRecord.publisherID.asInt).result.head.map{ publisher =>
+      books.filter(_.id === bookID).result.head.flatMap{ bookRecord =>
+        publishers.filter(_.id === bookRecord.publisherID).result.head.map{ publisher =>
           bookRecord.toBook(publisher)
         }
       }
@@ -75,48 +75,32 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   def editBook(bookID : BookID, book : EditBookDTO) : UnitOfWork[Unit] =
     UnitOfWork {
-      books.filter(_.id === bookID.asInt).map(p => (p.title, p.isbn, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID)).update(book.fields).map(_ => ())
+      books.filter(_.id === bookID).map(p => (p.title, p.isbn, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID)).update(book.fields).map(_ => ())
     }
   
   def getBookStatus(bookID : BookID) : UnitOfWork[BookStatus] =
     UnitOfWork {
-      books.filter(_.id === bookID.asInt).map(_.statusCode).result.head.map(_.toStatus)
+      books.filter(_.id === bookID).map(_.statusCode).result.head
     }
   
   def setBookStatus(bookID : BookID, status : BookStatus) : UnitOfWork[Unit] =
     UnitOfWork {
-      books.filter(_.id === bookID.asInt).map(_.statusCode).update(status.toCode).map(_ => ())
-    }
-  
-  def createLibraryMember(libraryMember : EditLibraryMemberDTO) : UnitOfWork[LibraryMemberID] =
-    UnitOfWork {
-      {
-        (personNames.map(n => (n.firstName, n.middleName, n.lastName, n.suffixName, n.titles))
-            returning personNames.map(_.id)
-            into ((fields, id) => id)
-        ) += libraryMember.name.fields
-      }.flatMap{ nameID =>
-        val memberColumns = (nameID, libraryMember.joinedDate.format(dateFormat))
-        (libraryMembers.map(m => (m.nameID, m.joinedDate))
-            returning libraryMembers.map(_.id)
-            into ((fields, id) => id)
-        ) += memberColumns
-      }.map(LibraryMemberID(_))
+      books.filter(_.id === bookID).map(_.statusCode).update(status).map(_ => ())
     }
   
   def getLibraryMembers() : UnitOfWork[Seq[LibraryMember]] =
     UnitOfWork {
-      (libraryMembers join personNames on (_.nameID === _.id)).result.map(_.map(fields => new LibraryMember(LibraryMemberID(fields._1._1), fields._2._2, fields._1._3)).to[Seq])
+      (libraryMembers join personNames on (_.nameID === _.id)).result.map(_.map(fields => new LibraryMember(fields._1._1, fields._2._2, fields._1._3)).to[Seq])
     }
   
   def getLibraryMember(memberID : LibraryMemberID) : UnitOfWork[LibraryMember] =
     UnitOfWork {
-      (libraryMembers.filter(_.id === memberID.asInt) join personNames on (_.nameID === _.id)).result.head.map(fields => new LibraryMember(LibraryMemberID(fields._1._1), fields._2._2, fields._1._3))
+      (libraryMembers.filter(_.id === memberID) join personNames on (_.nameID === _.id)).result.head.map(fields => new LibraryMember(fields._1._1, fields._2._2, fields._1._3))
     }
   
   private def searchBooksByTerm(searchTerm : String) : DBIOAction[Seq[BookListing], NoStream, Effect.All] = {
     val likeExpression = s"%$searchTerm%"
-    books.filter(b => b.title.like(likeExpression) || b.keywords.like(likeExpression) || b.description.like(likeExpression) || b.isbn.like(likeExpression) || b.callNumber.like(likeExpression)).map(_.id).result.flatMap { firstMatchingBookSet =>
+    books.filter(b => b.title.like(likeExpression) || b.keywords.asColumnOf[String].like(likeExpression) || b.description.like(likeExpression) || b.isbn.asColumnOf[String].like(likeExpression) || b.callNumber.like(likeExpression)).map(_.id).result.flatMap { firstMatchingBookSet =>
       publishers.filter(p => p.name.like(likeExpression)).map(_.id).result.flatMap { matchingPublisherIDs => 
         books.filter(b => b.publisherID.inSet(matchingPublisherIDs)).map(_.id).result.flatMap { secondMatchingBookSet =>
           val bookIDs = Set(firstMatchingBookSet ++ secondMatchingBookSet : _*)
@@ -137,7 +121,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   def createBookLoan(bookID : BookID, loan : LoanBookDTO) : UnitOfWork[BookLoanID] =
     UnitOfWork {
-      val fields = (bookID.asInt, loan.memberID.asInt, loan.loanedDate.format(dateFormat), loan.dueDate.format(dateFormat))
+      val fields = (bookID, loan.memberID, loan.loanedDate, loan.dueDate)
       (bookLoans.map(l => (l.bookID, l.memberID, l.loanedDate, l.dueDate))
         returning bookLoans.map(_.id)
         into ((name, id) => BookLoanID(id))
@@ -146,30 +130,62 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   def getBookLoans(bookID : BookID) : UnitOfWork[Seq[BookLoan]] =
     UnitOfWork {
-      (bookLoans.filter(_.bookID === bookID.asInt) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.id === _.id)).result }.map(
-        _.to[Seq].map(fields => new BookLoan(BookLoanID(fields._1._1._1), BookID(fields._1._1._2), new LibraryMember(LibraryMemberID(fields._1._1._3), fields._2._2, fields._1._2._3), LocalDate.parse(fields._1._1._4, dateFormat), LocalDate.parse(fields._1._1._5, dateFormat), fields._1._1._6.map(LocalDate.parse(_, dateFormat)))).sortBy(_.loanedDate).reverse
+      (bookLoans.filter(_.bookID === bookID) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.nameID === _.id)).result }.map(
+        _.to[Seq].map(fields => new BookLoan(BookLoanID(fields._1._1._1), fields._1._1._2, new LibraryMember(fields._1._1._3, fields._2._2, fields._1._2._3), fields._1._1._4, fields._1._1._5, fields._1._1._6)).sortBy(_.loanedDate).reverse
     )
   
   def getLibraryMemberLoans(libraryMemberID : LibraryMemberID) : UnitOfWork[Seq[BookLoan]] =
     UnitOfWork {
-      (bookLoans.filter(_.memberID === libraryMemberID.asInt) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.id === _.id)).result }.map(
-        _.to[Seq].map(fields => new BookLoan(BookLoanID(fields._1._1._1), BookID(fields._1._1._2), new LibraryMember(LibraryMemberID(fields._1._1._3), fields._2._2, fields._1._2._3), LocalDate.parse(fields._1._1._4, dateFormat), LocalDate.parse(fields._1._1._5, dateFormat), fields._1._1._6.map(LocalDate.parse(_, dateFormat)))).sortBy(_.loanedDate).reverse
+      (bookLoans.filter(_.memberID === libraryMemberID) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.nameID === _.id)).result }.map(
+        _.to[Seq].map(fields => new BookLoan(BookLoanID(fields._1._1._1), fields._1._1._2, new LibraryMember(fields._1._1._3, fields._2._2, fields._1._2._3), fields._1._1._4, fields._1._1._5, fields._1._1._6)).sortBy(_.loanedDate).reverse
     )
   
   def setReturnedDate(bookLoanID : BookLoanID, returnedDate : LocalDate) : UnitOfWork[Unit] =
     UnitOfWork {
-      bookLoans.filter(_.id === bookLoanID.asInt).map(_.returnedDate).update(Some(returnedDate.format(dateFormat))).map(_ => ())
+      bookLoans.filter(_.id === bookLoanID.asInt).map(_.returnedDate).update(Some(returnedDate)).map(_ => ())
     }
   
   def getBookByCallNumber(callNumber : String) : UnitOfWork[Option[Book]] =
     UnitOfWork {
       books.filter(_.callNumber === callNumber).result.headOption.flatMap{
         case Some(bookRecord) =>
-          publishers.filter(_.id === bookRecord.publisherID.asInt).result.head.map{ publisher =>
+          publishers.filter(_.id === bookRecord.publisherID).result.head.map{ publisher =>
             Some(bookRecord.toBook(publisher))
           }
         case None =>
           slick.dbio.SuccessAction(None)
       }
+    }
+  
+  private def insertPersonName(name : PersonName) =
+    (personNames.map(n => (n.firstName, n.middleName, n.lastName, n.suffixName, n.titles))
+        returning personNames.map(_.id)
+        into ((fields, id) => id)
+    ) += name.fields
+  
+  def createLibraryMember(libraryMember : EditLibraryMemberDTO) : UnitOfWork[LibraryMemberID] =
+    UnitOfWork {
+      insertPersonName(libraryMember.name).flatMap{ nameID =>
+        val memberColumns = (nameID, libraryMember.joinedDate)
+        (libraryMembers.map(m => (m.nameID, m.joinedDate))
+            returning libraryMembers.map(_.id)
+            into ((fields, id) => id)
+        ) += memberColumns
+      }
+    }
+  
+  def createAuthor(name : PersonName) : UnitOfWork[AuthorID] =
+    UnitOfWork {
+      insertPersonName(name).flatMap{ nameID =>
+        (authors.map(a => (a.nameID))
+            returning authors.map(_.id)
+            into ((fields, id) => id)
+        ) += nameID
+      }
+    }
+  
+  def getAuthors() : UnitOfWork[Seq[Author]] =
+    UnitOfWork {
+      (authors join personNames on (_.nameID === _.id)).result.map(_.map{ case ((authorID, nameID), (_, name)) => new Author(authorID, name) }.to[Seq].sortBy(_.name.lastName))
     }
 }

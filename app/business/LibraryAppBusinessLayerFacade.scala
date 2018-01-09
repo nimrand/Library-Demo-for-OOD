@@ -6,6 +6,13 @@ import javax.inject._
 import scala.collection.immutable._
 import java.time.LocalDate
 
+/**
+ * This facade defines all the business operations that can be performed by the business API.  The business layer does all business-level validation of
+ * requests, and makes changes to permanent storage as necessary through the repository object, which is provided through injection.  The business API
+ * uses the UnitOfWork pattern exposed by the repository to define complex operations and perform them as a single, atomic operation, thus ensuring
+ * data integrity even if concurrent operations to the repository are made.  Business operations are performed asynchronously, and thus always return
+ * `Future` objects, which can be used to schedule callbacks to retrieve the operation's result when finished.
+ */
 class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
   def registerPublisher(name : String) : Future[PublisherID] =
     repository.createPublisher(name).execute()
@@ -104,4 +111,10 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
     
   def getBookLoanHistory(bookID : BookID) : Future[Seq[BookLoan]] =
     repository.getBookLoans(bookID).execute()
+  
+  def getAuthors() : Future[Seq[Author]] =
+    repository.getAuthors().execute()
+  
+  def createAuthor(name : PersonName) : Future[AuthorID] =
+    repository.createAuthor(name).execute()
 }

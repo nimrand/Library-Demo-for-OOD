@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter
 
 @Singleton
 class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
-  
   val dbConfig = dbConfigProvider.get[JdbcProfile]
   
   val dateFormat =  DateTimeFormatter.BASIC_ISO_DATE
@@ -20,12 +19,22 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   import dbConfig._
   import profile.api._
   
+  implicit val authorIDColumnType = MappedColumnType.base[AuthorID, Int](_.asInt, AuthorID(_))
+  implicit val personNameIDColumnType = MappedColumnType.base[PersonNameID, Int](_.asInt, PersonNameID(_))
+  implicit val bookIDColumnType = MappedColumnType.base[BookID, Int](_.asInt, BookID(_))
+  implicit val bookLoanIDColumnType = MappedColumnType.base[BookLoanID, Int](_.asInt, BookLoanID(_))
+  implicit val publisherIDColumnType = MappedColumnType.base[PublisherID, Int](_.asInt, PublisherID(_))
+  implicit val libraryMemberIDColumnType = MappedColumnType.base[LibraryMemberID, Int](_.asInt, LibraryMemberID(_))
+  implicit val localDateColumnType = MappedColumnType.base[LocalDate, String](_.format(dateFormat), LocalDate.parse(_, dateFormat))
+  implicit val isbnColumnType = MappedColumnType.base[ISBN, String](_.toString, ISBN.tryParse(_).get)
+  implicit val tokensColumnType = MappedColumnType.base[Seq[String], String](_.mkString(" "), _.split(" ").to[Seq])
+  
   class PublisherTable(tag: Tag) extends Table[Publisher](tag, "Publisher") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[PublisherID]("id", O.PrimaryKey, O.AutoInc)
 
     def name = column[String]("name")
     
-    def * = (id, name) <> ((fields : (Int, String)) => new Publisher(PublisherID(fields._1), fields._2), (publisher: Publisher) => Some((publisher.id.asInt, publisher.name)))
+    def * = (id, name) <> ((fields : (PublisherID, String)) => new Publisher(fields._1, fields._2), (publisher: Publisher) => Some((publisher.id, publisher.name)))
   }
   
   val publishers = TableQuery[PublisherTable]
@@ -53,71 +62,71 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
       }
   }
   
-  case class BookRecord(id : BookID, title : String, isbn : ISBN, price : BigDecimal, keywords : Seq[String], description : String, callNumber : String, publicationDate : LocalDate, publisherID : PublisherID, statusCode : Int) {
+  implicit val bookStatusColumnType = MappedColumnType.base[BookStatus, Int](_.toCode, _.toStatus)
+  
+  case class BookRecord(id : BookID, title : String, isbn : ISBN, price : BigDecimal, keywords : Seq[String], description : String, callNumber : String, publicationDate : LocalDate, publisherID : PublisherID, statusCode : BookStatus) {
     def toBookListing =
-      BookListing(id, title, keywords, description, isbn, callNumber, statusCode.toStatus)
+      BookListing(id, title, keywords, description, isbn, callNumber, statusCode)
     
     def toBook(publisher : Publisher) =
-      new Book(id, title, isbn, price, keywords, description, callNumber, publicationDate, publisher, statusCode.toStatus)
+      new Book(id, title, isbn, price, keywords, description, callNumber, publicationDate, publisher, statusCode)
   }
   
   class BookTable(tag: Tag) extends Table[BookRecord](tag, "Book") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[BookID]("id", O.PrimaryKey, O.AutoInc)
     
     def title = column[String]("title")
-    def isbn = column[String]("isbn")
-    def price = column[String]("price")
-    def keywords = column[String]("keywords")
+    def isbn = column[ISBN]("isbn")
+    def price = column[BigDecimal]("price")
+    def keywords = column[Seq[String]]("keywords")
     def description = column[String]("description")
     def callNumber = column[String]("call_number")
-    def publicationDate = column[String]("publication_date")
-    def publisherID = column[Int]("publisher_id")
-    def statusCode = column[Int]("status_code")
+    def publicationDate = column[LocalDate]("publication_date")
+    def publisherID = column[PublisherID]("publisher_id")
+    def statusCode = column[BookStatus]("status_code")
     
-    def publisher = foreignKey("", publisherID, publishers)(_.id)
+    //def publisher = foreignKey("", publisherID, publishers)(_.id)
     
-    def * = (id, title, isbn, price, keywords, description, callNumber, publicationDate, publisherID, statusCode) <> ((fields : (Int, String, String, String, String, String, String, String, Int, Int)) => BookRecord(BookID(fields._1), fields._2, ISBN.tryParse(fields._3).get, BigDecimal(fields._4), fields._5.split(" ").to[Seq], fields._6, fields._7, LocalDate.parse(fields._8, dateFormat), PublisherID(fields._9), fields._10), (book: BookRecord) => Some((book.id.asInt, book.title, book.isbn.toString, book.price.toString, book.keywords.mkString(" "), book.description, book.callNumber, book.publicationDate.format(dateFormat), book.publisherID.asInt, book.statusCode)))
+    def * = (id, title, isbn, price, keywords, description, callNumber, publicationDate, publisherID, statusCode) <> (BookRecord.tupled, BookRecord.unapply)
   }
   
   val books = TableQuery[BookTable]
   
-  val bookFields = books.map(p => (p.title, p.isbn, p.price, p.keywords, p.description, p.callNumber, p.publicationDate, p.publisherID))
-  
-  class PersonNameTable(tag: Tag) extends Table[(Int, PersonName)](tag, "PersonName") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+  class PersonNameTable(tag: Tag) extends Table[(PersonNameID, PersonName)](tag, "PersonName") {
+    def id = column[PersonNameID]("id", O.PrimaryKey, O.AutoInc)
     
     def firstName = column[String]("first_name")
     def middleName = column[String]("middle_name")
     def lastName = column[String]("last_name")
     def suffixName = column[String]("suffix_name")
-    def titles = column[String]("titles")
+    def titles = column[Seq[String]]("titles")
     
     def * = (id, firstName, middleName, lastName, suffixName, titles) <> (
-        (fields : (Int, String, String, String, String, String)) => (fields._1, new PersonName(fields._2, fields._3, fields._4, fields._5, fields._6.split(" ").to[Seq])), (personNameRecord: (Int, PersonName)) => Some((personNameRecord._1, personNameRecord._2.firstName, personNameRecord._2.middleName, personNameRecord._2.lastName, personNameRecord._2.suffixName, personNameRecord._2.titles.mkString(" "))))
+        (fields : (PersonNameID, String, String, String, String, Seq[String])) => (fields._1, new PersonName(fields._2, fields._3, fields._4, fields._5, fields._6)), (personNameRecord: (PersonNameID, PersonName)) => Some((personNameRecord._1, personNameRecord._2.firstName, personNameRecord._2.middleName, personNameRecord._2.lastName, personNameRecord._2.suffixName, personNameRecord._2.titles)))
   }
   
   val personNames = TableQuery[PersonNameTable]
   
-  class LibraryMemberTable(tag: Tag) extends Table[(Int, Int, LocalDate)](tag, "LibraryMember") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+  class LibraryMemberTable(tag: Tag) extends Table[(LibraryMemberID, PersonNameID, LocalDate)](tag, "LibraryMember") {
+    def id = column[LibraryMemberID]("id", O.PrimaryKey, O.AutoInc)
     
-    def nameID = column[Int]("name_id")
-    def joinedDate = column[String]("joined_date")
+    def nameID = column[PersonNameID]("name_id")
+    def joinedDate = column[LocalDate]("joined_date")
     
     def * = (id, nameID, joinedDate) <> (
-        (fields : (Int, Int, String)) => (fields._1, fields._2, LocalDate.parse(fields._3, dateFormat)), (libraryMemberRecord: (Int, Int, LocalDate)) => Some((libraryMemberRecord._1, libraryMemberRecord._2, libraryMemberRecord._3.format(dateFormat))))
+        (fields : (LibraryMemberID, PersonNameID, LocalDate)) => (fields._1, fields._2, fields._3), (libraryMemberRecord: (LibraryMemberID, PersonNameID, LocalDate)) => Some((libraryMemberRecord._1, libraryMemberRecord._2, libraryMemberRecord._3)))
   }
   
   val libraryMembers = TableQuery[LibraryMemberTable]
   
-  class BookLoanTable(tag : Tag) extends Table[(Int, Int, Int, String, String, Option[String])](tag, "BookLoan") {
+  class BookLoanTable(tag : Tag) extends Table[(Int, BookID, LibraryMemberID, LocalDate, LocalDate, Option[LocalDate])](tag, "BookLoan") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     
-    def bookID = column[Int]("book_id")
-    def memberID = column[Int]("member_id")
-    def loanedDate = column[String]("loaned_date")
-    def dueDate = column[String]("due_date")
-    def returnedDate = column[Option[String]]("returned_date")
+    def bookID = column[BookID]("book_id")
+    def memberID = column[LibraryMemberID]("member_id")
+    def loanedDate = column[LocalDate]("loaned_date")
+    def dueDate = column[LocalDate]("due_date")
+    def returnedDate = column[Option[LocalDate]]("returned_date")
     
     def * = (id, bookID, memberID, loanedDate, dueDate, returnedDate)
   }
@@ -132,4 +141,13 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   }
   
   val users = TableQuery[UserTable]
+  
+  class AuthorTable(tag : Tag) extends Table[(AuthorID, PersonNameID)](tag, "Author") {
+    def id = column[AuthorID]("id", O.PrimaryKey, O.AutoInc)
+    def nameID = column[PersonNameID]("name_id")
+    
+    def * = (id, nameID)
+  }
+  
+  val authors = TableQuery[AuthorTable]
 }

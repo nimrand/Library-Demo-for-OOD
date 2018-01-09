@@ -1,3 +1,3 @@
 package business
 
-class AuthorID(val asInt : Int) extends AnyVal
+case class AuthorID(val asInt : Int) extends AnyVal
