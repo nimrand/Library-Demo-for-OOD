@@ -42,7 +42,7 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
   def registerLibraryMember(libraryMember : EditLibraryMemberDTO) : Future[LibraryMemberID] =
     repository.createLibraryMember(libraryMember).execute()
     
-  def searchBooks(searchTerms : Seq[String]) : Future[Seq[BookListing]] =
+  def searchBooks(searchTerms : Seq[String]) : Future[Seq[SearchResult[BookListing]]] =
     repository.searchBooks(searchTerms).execute()
     
   def getLibraryMembers() : Future[Seq[LibraryMember]] =

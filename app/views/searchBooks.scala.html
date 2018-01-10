@@ -4,8 +4,9 @@
 @import helper._
 @import business.BookListing
 @import scala.collection.immutable.Seq
+@import business.SearchResult
 
-@(searchForm: Form[Seq[String]], books : Seq[BookListing] = Seq())(implicit messages: Messages, req: RequestHeader)
+@(searchForm: Form[Seq[String]], searchResults : Seq[SearchResult[BookListing]] = Seq())(implicit messages: Messages, req: RequestHeader)
 
 @main("Search Books") {
 	<h1>Search Books</h1>
@@ -14,13 +15,13 @@
 	  @b3.text(searchForm("searchTerms"), '_label -> "Search Terms", 'placeholder -> "Search by book title, keyword, description, call no., ISBN, or publisher.")
 	  @b3.submit('class -> "btn btn-primary"){ Search Books }
 	}
-	@if(!books.isEmpty) {
+	@if(!searchResults.isEmpty) {
 	  <div class="table-responsive">
 		  <table class="table table-striped">
-		  	<tr><th>Title / Author</th><th>ISBN</th><th>Call Number</th><th>Status</th><tr>
-		  	@for(book <- books) {
-		  		<tr><td><a href="@routes.LibraryAppController.viewBookDetails(book.bookID)">@book.title</a><br />by @book.author</td><td>@book.isbn</td><td>@book.callNumber</td><td>@book.status.name</td></tr>
-		  		<tr><td colspan="4"><em>Keywords:</em> @book.keywords.mkString(" ")<br /><br /> @book.description</td></tr>
+		  	<tr><th>Relevance</th><th>Title / Author</th><th>ISBN</th><th>Call Number</th><th>Status</th><tr>
+		  	@for(result <- searchResults) {
+		  		<tr><td>@(f"${result.relevance * 100.0}%.0f%%")</td><td><a href="@routes.LibraryAppController.viewBookDetails(result.item.bookID)">@result.item.title</a><br />by @result.item.author</td><td>@result.item.isbn</td><td>@result.item.callNumber</td><td>@result.item.status.name</td></tr>
+		  		<tr><td colspan="5"><em>Keywords:</em> @result.item.keywords.mkString(" ")<br /><br /> @result.item.description</td></tr>
 		  	}
 		  </table>
 	  </div>

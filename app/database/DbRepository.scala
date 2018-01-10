@@ -117,12 +117,12 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     }
   }
   
-  def searchBooks(searchTerms : Seq[String]) : UnitOfWork[Seq[BookListing]] =
+  def searchBooks(searchTerms : Seq[String]) : UnitOfWork[Seq[SearchResult[BookListing]]] =
     UnitOfWork {
       DBIO.sequence(for(searchTerm <- searchTerms) yield searchBooksByTerm(searchTerm)).map { resultSets =>
         val allBooks = resultSets.flatten.groupBy(_.bookID).mapValues(_.head).values
-        val relevance = resultSets.flatten.groupBy(_.bookID).mapValues(_.size)
-        allBooks.to[Seq].sortBy(book => relevance(book.bookID) * -1)
+        val relevance = resultSets.flatten.groupBy(_.bookID).mapValues(_.size.toFloat / searchTerms.size)
+        allBooks.to[Seq].map(book => new SearchResult(relevance(book.bookID), book)).sortBy(_.relevance)
       }
     }
   
