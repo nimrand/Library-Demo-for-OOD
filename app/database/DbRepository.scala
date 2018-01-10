@@ -102,27 +102,27 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   private def searchBooksByTerm(searchTerm : String) : DBIOAction[Seq[BookListing], NoStream, Effect.All] = {
     val likeExpression = s"%$searchTerm%"
-    books.filter(b => b.title.like(likeExpression) || b.keywords.asColumnOf[String].like(likeExpression) || b.description.like(likeExpression) || b.isbn.asColumnOf[String].like(likeExpression) || b.callNumber.like(likeExpression)).map(_.id).result.flatMap { firstMatchingBookSet =>
-      publishers.filter(p => p.name.like(likeExpression)).map(_.id).result.flatMap { matchingPublisherIDs => 
-        books.filter(b => b.publisherID.inSet(matchingPublisherIDs)).map(_.id).result.flatMap { secondMatchingBookSet =>
-          val bookIDs = Set(firstMatchingBookSet ++ secondMatchingBookSet : _*)
-          (for {
-            book <- books.filter(_.id.inSet(bookIDs))
-            author <- authors if book.authorID === author.id
-            name <- personNames if author.nameID === name.id
-          } yield (book, name)).result.map(_.to[Seq].map{ case (book, (nameID, name)) => book.toBookListing(new Author(book.authorID, name)) })
-          //books.filter(_.id.inSet(bookIDs)).join(authors).on(_.authorID === _.id).join(personNames).on{ case ((book, author), name) => author.nameID === name.id }.result.map(_.to[Seq].map(_.toBookListing))
-        }
-      }
-    }
+    
+    (for {
+      book <- books
+      author <- book.author
+      authorName <- author.name
+      publisher <- book.publisher if book.title.like(likeExpression) || book.keywords.asColumnOf[String].like(likeExpression) || book.description.like(likeExpression) || book.isbn.asColumnOf[String].like(likeExpression) || book.callNumber.like(likeExpression) || publisher.name.like(likeExpression) || authorName.firstName.like(likeExpression) || authorName.lastName.like(likeExpression)
+    } yield (book, authorName.name)).result.map(_.to[Seq].map{ case (book, authorName) => book.toBookListing(authorName) })
   }
   
-  def searchBooks(searchTerms : Seq[String]) : UnitOfWork[Seq[SearchResult[BookListing]]] =
+  def searchBooks(searchTerms : Seq[String], sort : BookSearchSort) : UnitOfWork[Seq[SearchResult[BookListing]]] =
     UnitOfWork {
       DBIO.sequence(for(searchTerm <- searchTerms) yield searchBooksByTerm(searchTerm)).map { resultSets =>
         val allBooks = resultSets.flatten.groupBy(_.bookID).mapValues(_.head).values
         val relevance = resultSets.flatten.groupBy(_.bookID).mapValues(_.size.toFloat / searchTerms.size)
-        allBooks.to[Seq].map(book => new SearchResult(relevance(book.bookID), book)).sortBy(_.relevance)
+        val results = allBooks.to[Seq].map(book => new SearchResult(relevance(book.bookID), book))
+        sort match {
+          case BookSearchSort.relevance => results.sortBy(_.relevance * -1)
+          case BookSearchSort.title => results.sortBy(_.item.title)
+          case BookSearchSort.authorFirstName => results.sortBy(_.item.author.name.firstName)
+          case BookSearchSort.authorLastName => results.sortBy(_.item.author.name.lastName)
+        }
       }
     }
   

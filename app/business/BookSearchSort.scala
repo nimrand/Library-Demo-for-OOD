@@ -1,15 +1,18 @@
 package business
 
 sealed abstract class BookSearchSort(val name : String) {
+  
+  
   override def toString = name
 }
 
 object BookSearchSort {
-  object Relevance extends BookSearchSort("Relevance")
-  object Title extends BookSearchSort("Title")
-  object AuthorLastName extends BookSearchSort("AuthorLastName")
-  object AuthorFirstName extends BookSearchSort("AuthorFirstName")
+  object relevance extends BookSearchSort("Relevance")
+  object title extends BookSearchSort("Title")
+  object authorLastName extends BookSearchSort("AuthorLastName")
+  object authorFirstName extends BookSearchSort("AuthorFirstName")
   
-  val all = Seq(Relevance, Title, AuthorLastName, AuthorFirstName)
+  val default = relevance
+  val all = Seq(relevance, title, authorLastName, authorFirstName)
   val nameMap = all.map(sort => sort.name -> sort).toMap
 }

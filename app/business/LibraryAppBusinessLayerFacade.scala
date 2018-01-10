@@ -42,8 +42,8 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
   def registerLibraryMember(libraryMember : EditLibraryMemberDTO) : Future[LibraryMemberID] =
     repository.createLibraryMember(libraryMember).execute()
     
-  def searchBooks(searchTerms : Seq[String]) : Future[Seq[SearchResult[BookListing]]] =
-    repository.searchBooks(searchTerms).execute()
+  def searchBooks(searchTerms : Seq[String], sort : BookSearchSort) : Future[Seq[SearchResult[BookListing]]] =
+    repository.searchBooks(searchTerms, sort).execute()
     
   def getLibraryMembers() : Future[Seq[LibraryMember]] =
     repository.getLibraryMembers().execute()

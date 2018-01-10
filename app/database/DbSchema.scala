@@ -65,8 +65,8 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   implicit val bookStatusColumnType = MappedColumnType.base[BookStatus, Int](_.toCode, _.toStatus)
   
   case class BookRecord(id : BookID, title : String, authorID : AuthorID, isbn : ISBN, price : BigDecimal, keywords : Seq[String], description : String, callNumber : String, publicationDate : LocalDate, publisherID : PublisherID, statusCode : BookStatus) {
-    def toBookListing(author : Author) =
-      BookListing(id, title, author, keywords, description, isbn, callNumber, statusCode)
+    def toBookListing(authorName : PersonName) =
+      BookListing(id, title, new Author(authorID, authorName), keywords, description, isbn, callNumber, statusCode)
     
     def toBook(author : Author, publisher : Publisher) =
       new Book(id, title, author, isbn, price, keywords, description, callNumber, publicationDate, publisher, statusCode)
@@ -86,7 +86,8 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
     def publisherID = column[PublisherID]("publisher_id")
     def statusCode = column[BookStatus]("status_code")
     
-    //def publisher = foreignKey("", publisherID, publishers)(_.id)
+    def publisher = foreignKey("", publisherID, publishers)(_.id)
+    def author = foreignKey("", authorID, authors)(_.id)
     
     def * = (id, title, authorID, isbn, price, keywords, description, callNumber, publicationDate, publisherID, statusCode) <> (BookRecord.tupled, BookRecord.unapply)
   }
@@ -102,8 +103,10 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
     def suffixName = column[String]("suffix_name")
     def titles = column[Seq[String]]("titles")
     
-    def * = (id, firstName, middleName, lastName, suffixName, titles) <> (
-        (fields : (PersonNameID, String, String, String, String, Seq[String])) => (fields._1, new PersonName(fields._2, fields._3, fields._4, fields._5, fields._6)), (personNameRecord: (PersonNameID, PersonName)) => Some((personNameRecord._1, personNameRecord._2.firstName, personNameRecord._2.middleName, personNameRecord._2.lastName, personNameRecord._2.suffixName, personNameRecord._2.titles)))
+    def name = (firstName, middleName, lastName, suffixName, titles) <> (PersonName.tupled, PersonName.unapply)
+    
+    def * = (id, name)
+        //(fields : (PersonNameID, String, String, String, String, Seq[String])) => (fields._1, new PersonName(fields._2, fields._3, fields._4, fields._5, fields._6)), (personNameRecord: (PersonNameID, PersonName)) => Some((personNameRecord._1, personNameRecord._2.firstName, personNameRecord._2.middleName, personNameRecord._2.lastName, personNameRecord._2.suffixName, personNameRecord._2.titles)))
   }
   
   val personNames = TableQuery[PersonNameTable]
@@ -146,6 +149,8 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   class AuthorTable(tag : Tag) extends Table[(AuthorID, PersonNameID)](tag, "Author") {
     def id = column[AuthorID]("id", O.PrimaryKey, O.AutoInc)
     def nameID = column[PersonNameID]("name_id")
+    
+    def name = foreignKey("", nameID, personNames)(_.id)
     
     def * = (id, nameID)
   }
