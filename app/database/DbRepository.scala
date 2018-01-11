@@ -30,6 +30,21 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       (name.firstName, name.middleName, name.lastName, name.suffixName, name.titles)
   }
   
+  implicit class ExtendedString(string : String) {
+    def toLikeExpression =
+      s"%${string.trim}%"
+  }
+  
+  implicit class ExtendedBookSearchResultSeq(books : Seq[SearchResult[BookListing]]) {
+    def sort(sort : BookSearchSort) =
+      sort match {
+        case BookSearchSort.relevance => books.sortBy(_.relevance * -1)
+        case BookSearchSort.title => books.sortBy(_.item.title)
+        case BookSearchSort.authorFirstName => books.sortBy(_.item.author.name.firstName)
+        case BookSearchSort.authorLastName => books.sortBy(_.item.author.name.lastName)
+      }
+  }
+  
   class UnitOfWork[T](private val dbAction : DBIOAction[T, NoStream, Effect.All]) {
     def map[U](f : T => U) =
       UnitOfWork(dbAction.map(f))
@@ -100,7 +115,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     }
   
   private def searchBooksByTerm(searchTerm : String) : DBIOAction[Seq[BookListing], NoStream, Effect.All] = {
-    val likeExpression = s"%$searchTerm%"
+    val likeExpression = searchTerm.toLikeExpression
     
     (for {
       book <- books
@@ -115,14 +130,19 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       DBIO.sequence(for(searchTerm <- searchTerms) yield searchBooksByTerm(searchTerm)).map { resultSets =>
         val allBooks = resultSets.flatten.groupBy(_.bookID).mapValues(_.head).values
         val relevance = resultSets.flatten.groupBy(_.bookID).mapValues(_.size.toFloat / searchTerms.size)
-        val results = allBooks.to[Seq].map(book => new SearchResult(relevance(book.bookID), book))
-        sort match {
-          case BookSearchSort.relevance => results.sortBy(_.relevance * -1)
-          case BookSearchSort.title => results.sortBy(_.item.title)
-          case BookSearchSort.authorFirstName => results.sortBy(_.item.author.name.firstName)
-          case BookSearchSort.authorLastName => results.sortBy(_.item.author.name.lastName)
-        }
+        allBooks.to[Seq].map(book => new SearchResult(relevance(book.bookID), book)).sort(sort)
       }
+    }
+  
+  def searchBooks(query : AdvancedBookSearchQuery, sort : BookSearchSort) : UnitOfWork[Seq[SearchResult[BookListing]]] =
+    UnitOfWork {
+      val isbnQuery = ISBN.tryParseAndConvert(query.isbn).asOption.map(_.toString).getOrElse(query.isbn.replace("""\s+""", "").replace("-", ""))
+      (for {
+        book <- books
+        author <- book.author
+        authorName <- author.name
+        publisher <- book.publisher if book.title.like(query.title.toLikeExpression) && (authorName.firstName.like(query.authorName.toLikeExpression) || authorName.lastName.like(query.authorName.toLikeExpression)) && publisher.name.like(query.publisherName.toLikeExpression) && (book.description.like(query.description.toLikeExpression) || book.keywords.asColumnOf[String].like(query.description.toLikeExpression)) && book.callNumber.asColumnOf[String].like(query.callNumber.toLikeExpression) && book.isbn.asColumnOf[String].like(isbnQuery.toLikeExpression)
+      } yield (book, authorName.name)).result.map(_.to[Seq].map{ case ((bookID, bookProperties, bookStatus), authorName) => new SearchResult(1.0f, new BookListing(bookID, bookProperties, authorName, bookStatus)) }.sort(sort))
     }
   
   def createBookLoan(bookID : BookID, loan : LoanBookDTO) : UnitOfWork[BookLoanID] =
