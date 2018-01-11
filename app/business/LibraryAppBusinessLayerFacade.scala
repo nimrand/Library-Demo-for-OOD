@@ -20,7 +20,7 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
   def registerBook(book : EditBookDTO) : Future[BookID] =
     repository.getBookByCallNumber(book.callNumber).flatMap {
       case Some(_) =>
-        throw new BusinessException(s"A book with that call number already exists.  If you are adding a second copy of the book to the system, please use '${book.callNumber}B' instead.")
+        throw new DuplicateCallNumberException(s"A book with that call number already exists.  If you are adding a second copy of the book to the system, please use '${book.callNumber}B' instead.")
       case None =>
         repository.createBook(book)
     }.execute()
@@ -66,7 +66,7 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
         if(loans.isEmpty || !loans.head.returnedDate.isEmpty)
           repository.setBookStatus(bookID, BookStatus.Available)
         else
-          repository.setBookStatus(bookID, BookStatus.CheckedOut)
+          throw new BusinessException("Book is loaned out.  Use the return book command instead.")
       }
     }.execute()
     
@@ -77,7 +77,7 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
       repository.setBookStatus(bookID, BookStatus.Disposed)
     }.execute()
     
-  def loanBook(bookID : BookID, loan : LoanBookDTO) (implicit executor : scala.concurrent.ExecutionContext) : Future[BookLoanID] =
+  def loanBook(bookID : BookID, loan : LoanBookDTO) : Future[BookLoanID] =
     if(loan.loanedDate.isAfter(loan.dueDate))
       Future.failed(new BusinessException("Due date must be on or after loaned date."))
     else
@@ -101,9 +101,9 @@ class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
         }
       }.execute()
     
-  def reportBookReturned(bookID : BookID, returnedDate : LocalDate)  (implicit executor : scala.concurrent.ExecutionContext) : Future[Unit] =
+  def reportBookReturned(bookID : BookID, returnedDate : LocalDate) : Future[Unit] =
     repository.getBookLoans(bookID).flatMap { loans =>
-      if(loans.isEmpty)
+      if(loans.isEmpty || loans.head.returnedDate != None)
         throw new BusinessException("The book is not loaned out.")
       if(loans.head.loanedDate.isAfter(returnedDate))
         throw new BusinessException("The returned date must on or after the loaned date.")

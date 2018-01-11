@@ -28,7 +28,7 @@ class DbSchema @Inject() (dbConfigProvider: DatabaseConfigProvider) {
   implicit val localDateColumnType = MappedColumnType.base[LocalDate, String](_.format(dateFormat), LocalDate.parse(_, dateFormat))
   implicit val isbnColumnType = MappedColumnType.base[ISBN, String](_.toString, ISBN.tryParse(_).get)
   implicit val callNumberColumnType = MappedColumnType.base[CallNumber, String](_.toString, CallNumber.tryParse(_).get)
-  implicit val tokensColumnType = MappedColumnType.base[Seq[String], String](_.mkString(" "), _.split(" ").to[Seq])
+  implicit val tokensColumnType = MappedColumnType.base[Seq[String], String](_.mkString(" "), _.split(" ").filter(_ != "").to[Seq])
   
   class PublisherTable(tag: Tag) extends Table[Publisher](tag, "Publisher") {
     def id = column[PublisherID]("id", O.PrimaryKey, O.AutoInc)

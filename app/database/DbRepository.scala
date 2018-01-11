@@ -163,7 +163,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     } yield (loan.id, loan.bookID, loan.loanedDate, loan.dueDate, loan.returnedDate, member.id, member.joinedDate, memberName.name)).result.map(_.map{
       case (loanID, bookID, loanedDate, dueDate, returnedDate, memberID, memberJoinedDate, memberName) =>
         new BookLoan(loanID, bookID, new LibraryMember(memberID, memberName, memberJoinedDate), loanedDate, dueDate, returnedDate)
-    }.to[Seq])
+    }.to[Seq].sortBy(_.loanedDate).reverse)
   }
   
   def getLibraryMemberLoans(libraryMemberID : LibraryMemberID) : UnitOfWork[Seq[BookLoan]] =
