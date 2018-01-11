@@ -11,7 +11,7 @@ case class Success[+T](value : T) extends CheckedConversion[T] {
 }
 
 class Error(val message : String) extends CheckedConversion[Nothing] {
-  def get() = throw new Exception()
+  def get() = throw new Exception(message)
   def successful() = false
 }
 

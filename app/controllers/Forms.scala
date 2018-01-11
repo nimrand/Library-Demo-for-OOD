@@ -8,19 +8,8 @@ import play.api.data.Forms._
 import play.api.data._
 import scala.collection.immutable.Seq
 import FormMappings._
-import play.api.data.format.Formatter
 
 object Forms {
-  implicit val isbnFormat = new Formatter[ISBN] {
-    def bind(key : String, data : Map[String, String]) = {
-      ISBN.tryParseAndConvert(data.getOrElse(key, "")) match {
-        case Success(isbn) => Right(isbn)
-        case Error(message) => Left(List(FormError(key, message)))
-      }
-    }
-    
-    def unbind(key : String, isbn : ISBN) = Map(key -> isbn.toString)
-  }
   
   val bookForm = Form(
     mapping(
@@ -32,7 +21,7 @@ object Forms {
       "publisherID" -> number.transform[PublisherID](id => PublisherID(id), id => id.asInt),
       "price" -> bigDecimal(precision=10, scale=2),
       "keywords" -> tokens(1024),
-      "callNumber" -> nonEmptyText(maxLength=32).verifying("Must be in the format '#.# A'.", callNumber => callNumber.matches("""\d+.\d+ [A-Z0-9]+"""))
+      "callNumber" -> of[CallNumber] //  nonEmptyText(maxLength=32).verifying("Must be in the format '#.# A'.", callNumber => callNumber.matches("""\d+.\d+ [A-Z0-9]+"""))
     ) (EditBookDTO.apply) (EditBookDTO.unapply)
   )
   

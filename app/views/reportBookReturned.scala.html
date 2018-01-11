@@ -10,7 +10,8 @@
 @(bookReturnedForm : Form[LocalDate], book : Book)(implicit messages: Messages, req: RequestHeader)
 
 @main("Loan Book") {
-	<h1>Report Book Returned - @book.title</h1>
+	<h1>Report Book Returned</h1>
+	<h2>@book.title</h2>
 	@form(action = routes.LibraryAppController.reportBookReturnedPost(book.id), 'id -> "bookReturnedForm") {
       @CSRF.formField
       @b3.date(bookReturnedForm("returnedDate"), '_label -> "Returned Date")

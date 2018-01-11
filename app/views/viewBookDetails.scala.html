@@ -48,29 +48,30 @@
 		  		</tr>
 		  	}
 		  </table>
+		  </div>
 	  }
-  </div>
+  
 	</div>
 	<div class="col-md-4">
+	  <div class="btn-group-vertical" role="group">
+	    <a class="btn btn-default" href="@routes.Assets.versioned(s"images/map-${book.callNumber.section}.png")" target="_blank">Location</a>
 		@if(!req.session.get("username").isEmpty) {
-			<div class="btn-group-vertical" role="group">
-			  <a class="btn btn-default" href="@routes.LibraryAppController.editBook(book.id)">Edit Book</a>
-				@if(book.status != BookStatus.Disposed) {
-				  @if(book.status == BookStatus.Available) {
-				    <a class="btn btn-default" href="@routes.LibraryAppController.loanBook(book.id)">Loan Book</a>
-				  } else if(book.status == BookStatus.CheckedOut || loanHistory.headOption.map(_.returnedDate == None).getOrElse(false)) {
-				    <a class="btn btn-default" data-toggle="modal" href="@routes.LibraryAppController.reportBookReturned(book.id)">Report Returned</a>
-				  }
-				  @if(book.status == BookStatus.Available || book.status == BookStatus.CheckedOut) {
-				    <button class="btn btn-default" data-toggle="modal" data-target="#reportBookLostDialog">Report Lost</button>
-				  } else if(book.status == BookStatus.Lost && !loanHistory.headOption.map(_.returnedDate == None).getOrElse(false)) {
-				    <button class="btn btn-default" data-toggle="modal" data-target="#reportBookFoundDialog">Report Found</button>
-				  }
-				  @if(book.status == BookStatus.Available) {
-				    <button class="btn btn-default" data-toggle="modal" data-target="#disposeBookDialog">Dispose</button>
-				  }
-				}
-			</div>
+		  	<a class="btn btn-default" href="@routes.LibraryAppController.editBook(book.id)">Edit Book</a>
+			@if(book.status != BookStatus.Disposed) {
+			  @if(book.status == BookStatus.Available) {
+			    <a class="btn btn-default" href="@routes.LibraryAppController.loanBook(book.id)">Loan Book</a>
+			  } else if(book.status == BookStatus.CheckedOut || loanHistory.headOption.map(_.returnedDate == None).getOrElse(false)) {
+			    <a class="btn btn-default" data-toggle="modal" href="@routes.LibraryAppController.reportBookReturned(book.id)">Report Returned</a>
+			  }
+			  @if(book.status == BookStatus.Available || book.status == BookStatus.CheckedOut) {
+			    <button class="btn btn-default" data-toggle="modal" data-target="#reportBookLostDialog">Report Lost</button>
+			  } else if(book.status == BookStatus.Lost && !loanHistory.headOption.map(_.returnedDate == None).getOrElse(false)) {
+			    <button class="btn btn-default" data-toggle="modal" data-target="#reportBookFoundDialog">Report Found</button>
+			  }
+			  @if(book.status == BookStatus.Available) {
+			    <button class="btn btn-default" data-toggle="modal" data-target="#disposeBookDialog">Dispose</button>
+			  }
+			}
 		}
 	  </div>
 	</div>

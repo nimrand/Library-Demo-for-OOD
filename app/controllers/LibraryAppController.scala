@@ -208,7 +208,7 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
   }
   
   def reportBookReturnedPost(bookID : BookID) = authenticatedAction.async { implicit request =>
-    reportBookReturnedForm.businessFold(
+    reportBookReturnedForm.bindFromRequest.businessFold(
       formWithErrors => reportBookReturnedView(bookID, formWithErrors).map(BadRequest(_)),
       returnedDate => 
         businessApi.reportBookReturned(bookID, returnedDate).map { _ =>
