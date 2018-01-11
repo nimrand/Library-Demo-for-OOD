@@ -136,13 +136,27 @@ class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : Lib
   
   def searchBooks(sort : BookSearchSort) = Action.async { implicit request =>
     if(request.queryString.isEmpty) {
-      Future.successful(Ok(views.html.searchBooks(searchBooksForm, sort)))
+      Future.successful(Ok(views.html.searchBooks(searchBooksForm, sort, None)))
     } else {
       searchBooksForm.bindFromRequest.fold(
-        formWithErrors => Future.successful(BadRequest(views.html.searchBooks(formWithErrors, sort))),
+        formWithErrors => Future.successful(BadRequest(views.html.searchBooks(formWithErrors, sort, None))),
         searchTerms =>
           businessApi.searchBooks(searchTerms, sort).map{ searchResults =>
-            Ok(views.html.searchBooks(searchBooksForm.fill(searchTerms), sort, searchResults))
+            Ok(views.html.searchBooks(searchBooksForm.fill(searchTerms), sort, Some(searchResults)))
+          }
+      )
+    }
+  }
+  
+  def searchBooksWithAdvancedQuery(sort : BookSearchSort) = Action.async { implicit request =>
+    if(request.queryString.isEmpty) {
+      Future.successful(Ok(views.html.searchBooksAdvanced(advancedSearchForm, sort, None)))
+    } else {
+      advancedSearchForm.bindFromRequest.businessFold(
+        formWithErrors => Future.successful(BadRequest(views.html.searchBooksAdvanced(formWithErrors, sort, None))),
+        query =>
+          businessApi.searchBooks(query, sort).map{ searchResults =>
+            Ok(views.html.searchBooksAdvanced(advancedSearchForm.fill(query), sort, Some(searchResults)))
           }
       )
     }

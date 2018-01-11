@@ -1,8 +1,6 @@
 package business
 
 sealed abstract class BookSearchSort(val name : String) {
-  
-  
   override def toString = name
 }
 

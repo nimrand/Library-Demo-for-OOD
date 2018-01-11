@@ -66,4 +66,15 @@ object Forms {
           "titles" -> tokens(256)
       ) (PersonName.apply) (PersonName.unapply) // { (firstName, middleName, lastName, suffixName, titles) => { PersonName(firstName, middleName, lastName, suffixName, titles) } (name => Some((name.firstName, name.middleName, name.lastName, name.suffixName, name.titles)))
   )
+  
+  val advancedSearchForm = Form[AdvancedBookSearchQuery](
+      mapping(
+          "title" -> text,
+          "authorName" -> text,
+          "publisherName" -> text,
+          "description" -> text,
+          "callNumber" -> text,
+          "isbn" -> text
+      ) (AdvancedBookSearchQuery.apply) (AdvancedBookSearchQuery.unapply)
+  )
 }

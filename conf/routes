@@ -11,6 +11,7 @@ GET		/books/details/:id          controllers.LibraryAppController.viewBookDetail
 GET		/books/edit/:id             controllers.LibraryAppController.editBook(id : business.BookID)
 POST		/books/edit/:id             controllers.LibraryAppController.editBookPost(id : business.BookID)
 GET     /books/search/:sort         controllers.LibraryAppController.searchBooks(sort : business.BookSearchSort)
+GET     /books/searchAdvanced/:sort controllers.LibraryAppController.searchBooksWithAdvancedQuery(sort : business.BookSearchSort)
 POST    /books/reportLost/:id       controllers.LibraryAppController.reportBookLost(id : business.BookID)
 POST    /books/reportFound/:id      controllers.LibraryAppController.reportBookFound(id : business.BookID)
 POST    /books/dispose/:id          controllers.LibraryAppController.disposeBook(id : business.BookID)

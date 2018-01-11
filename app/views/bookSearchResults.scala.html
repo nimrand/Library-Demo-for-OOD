@@ -1,0 +1,45 @@
+@* searchBookBase Template File *@
+
+@import business.BookListing
+@import business.SearchResult
+@import business.BookSearchSort
+
+@(searchResults : Seq[SearchResult[BookListing]] = Seq(), showRelevance : Boolean)(implicit messages: Messages, req: RequestHeader)
+
+@if(!searchResults.isEmpty) {
+	<div class="table-responsive">
+		<table class="table table-striped">
+	  		<tr>
+	  			@if(showRelevance) {
+		  			<th><a href="#" class="sort" data-sort="@routes.LibraryAppController.searchBooks(BookSearchSort.relevance)">Relevance</a></th>
+		  		}
+		  		<th><a href="#" class="sort" data-sort="@routes.LibraryAppController.searchBooks(BookSearchSort.title)">Title</a> / Author (<a href="#" class="sort" data-sort="@routes.LibraryAppController.searchBooks(BookSearchSort.authorFirstName)">First Name</a> | <a href="#" class="sort" data-sort="@routes.LibraryAppController.searchBooks(BookSearchSort.authorLastName)">Last Name</a>)</th>
+		  		<th>ISBN</th>
+		  		<th>Call Number</th>
+		  		<th>Status</th>
+	  		<tr>
+		  	@for(result <- searchResults) {
+		  		<tr>
+		  			@if(showRelevance) {
+		  				<td>@(f"${result.relevance * 100.0}%.0f%%")</td>
+	  				}
+		  			<td><a href="@routes.LibraryAppController.viewBookDetails(result.item.bookID)">@result.item.title</a><br />by @result.item.author</td>
+		  			<td><span class="nobr">@result.item.isbn</span></td>
+		  			<td>@result.item.callNumber</td>
+		  			<td>@result.item.status.name</td>
+	  			</tr>
+		  		<tr><td colspan="@if(showRelevance){5}else{4}"><em>Keywords:</em> @result.item.keywords.mkString(" ")<br /><br /> @result.item.description</td></tr>
+		  	}
+		</table>
+	</div>
+} else {
+	No books found.
+}
+<script>
+$(function() {
+	$(".sort").click(function() {
+		var actionUrl = $(this).data("sort");
+		$("#searchForm").attr("action", actionUrl).submit();
+	})
+})
+</script>

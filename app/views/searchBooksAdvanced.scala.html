@@ -1,0 +1,31 @@
+@* searchBooks Template File *@
+
+@import b3.vertical.fieldConstructor 
+@import helper._
+@import business.BookListing
+@import scala.collection.immutable.Seq
+@import business.SearchResult
+@import business.BookSearchSort
+@import business.AdvancedBookSearchQuery
+
+@(searchForm: Form[AdvancedBookSearchQuery], sort : BookSearchSort, searchResults : Option[Seq[SearchResult[BookListing]]])(implicit messages: Messages, req: RequestHeader)
+
+@main("Search Books") {
+	<h1>Search Books</h1>
+	<ul class="nav nav-tabs">
+	  <li><a href="@routes.LibraryAppController.searchBooks(BookSearchSort.default)">Basic Search</a></li>
+	  <li class="active"><a href="#">Advanced Search</a></li>
+	</ul>
+	@b3.form(action = routes.LibraryAppController.searchBooksWithAdvancedQuery(sort), 'id -> "searchForm") {
+	  @b3.text(searchForm("title"), '_label -> "Book Title")
+	  @b3.text(searchForm("authorName"), '_label -> "Author Name")
+	  @b3.text(searchForm("publisherName"), '_label -> "Publisher")
+	  @b3.text(searchForm("description"), '_label -> "Description")
+	  @b3.text(searchForm("callNumber"), '_label -> "Call Number")
+	  @b3.text(searchForm("isbn"), '_label -> "ISBN")
+	  @b3.submit('class -> "btn btn-primary"){ Search Books }
+	}
+	@searchResults.map{ results =>
+	  @bookSearchResults(results, true)
+	}
+}
