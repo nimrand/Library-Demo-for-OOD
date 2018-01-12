@@ -10,7 +10,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Singleton
-class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext) {
+class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext) extends Repository {
   import dbSchema.dbConfig._
   import profile.api._
   import dbSchema._
@@ -45,11 +45,11 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       }
   }
   
-  class UnitOfWork[T](private val dbAction : DBIOAction[T, NoStream, Effect.All]) {
+  class DbUnitOfWork[T](private val dbAction : DBIOAction[T, NoStream, Effect.All]) extends UnitOfWork[T, DbUnitOfWork] {
     def map[U](f : T => U) =
       UnitOfWork(dbAction.map(f))
     
-    def flatMap[U](f : T => UnitOfWork[U]) : UnitOfWork[U] =
+    def flatMap[U](f : T => DbUnitOfWork[U]) : DbUnitOfWork[U] =
       UnitOfWork(dbAction.map(f).flatMap(_.dbAction))
     
     def execute() =
@@ -58,20 +58,22 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
   
   object UnitOfWork {
     def apply[T](dbAction : DBIOAction[T, NoStream, Effect.All]) =
-      new UnitOfWork(dbAction)
+      new DbUnitOfWork(dbAction)
   }
   
-  def createPublisher(name : String) : UnitOfWork[PublisherID] =
+  type W[T] = DbUnitOfWork[T]
+  
+  def createPublisher(name : String) : DbUnitOfWork[PublisherID] =
     UnitOfWork {
       publishers.map(p => p.name) returning dbSchema.publishers.map(_.id) into ((name, id) => id) += (name)
     }
   
-  def getPublishers() : UnitOfWork[Seq[Publisher]] =
+  def getPublishers() : DbUnitOfWork[Seq[Publisher]] =
     UnitOfWork {
-      publishers.result.map(_.to[Seq])
+      publishers.result.map(_.sortBy(_.name).to[Seq])
     }
   
-  def createBook(book : EditBookDTO) : UnitOfWork[BookID] =
+  def createBook(book : EditBookDTO) : DbUnitOfWork[BookID] =
     UnitOfWork {
       (books.map(p => (p.properties, p.status))
           returning books.map(_.id)
@@ -79,7 +81,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       ) += (book, BookStatus.Available)
     }
   
-  def getBook(bookID : BookID) : UnitOfWork[Book] =
+  def getBook(bookID : BookID) : DbUnitOfWork[Book] =
     UnitOfWork {
       (for {
         book <- books if book.id === bookID
@@ -89,27 +91,27 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       } yield (book, authorName.name, publisher.name)).result.head.map{ case ((bookID, bookProperties, bookStatus), authorName, publisherName) => new Book(bookID, bookProperties, authorName, publisherName, bookStatus) }
     }
   
-  def editBook(bookID : BookID, book : EditBookDTO) : UnitOfWork[Unit] =
+  def editBook(bookID : BookID, book : EditBookDTO) : DbUnitOfWork[Unit] =
     UnitOfWork {
       books.filter(_.id === bookID).map(_.properties).update(book).map(_ => ())
     }
   
-  def getBookStatus(bookID : BookID) : UnitOfWork[BookStatus] =
+  def getBookStatus(bookID : BookID) : DbUnitOfWork[BookStatus] =
     UnitOfWork {
       books.filter(_.id === bookID).map(_.status).result.head
     }
   
-  def setBookStatus(bookID : BookID, status : BookStatus) : UnitOfWork[Unit] =
+  def setBookStatus(bookID : BookID, status : BookStatus) : DbUnitOfWork[Unit] =
     UnitOfWork {
       books.filter(_.id === bookID).map(_.status).update(status).map(_ => ())
     }
   
-  def getLibraryMembers() : UnitOfWork[Seq[LibraryMember]] =
+  def getLibraryMembers() : DbUnitOfWork[Seq[LibraryMember]] =
     UnitOfWork {
-      (libraryMembers join personNames on (_.nameID === _.id)).result.map(_.map(fields => new LibraryMember(fields._1._1, fields._2._2, fields._1._3)).to[Seq])
+      (libraryMembers join personNames on (_.nameID === _.id)).result.map(_.map(fields => new LibraryMember(fields._1._1, fields._2._2, fields._1._3)).sortBy(_.id.asInt).to[Seq])
     }
   
-  def getLibraryMember(memberID : LibraryMemberID) : UnitOfWork[LibraryMember] =
+  def getLibraryMember(memberID : LibraryMemberID) : DbUnitOfWork[LibraryMember] =
     UnitOfWork {
       (libraryMembers.filter(_.id === memberID) join personNames on (_.nameID === _.id)).result.head.map(fields => new LibraryMember(fields._1._1, fields._2._2, fields._1._3))
     }
@@ -125,7 +127,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     } yield (book, authorName.name)).result.map(_.to[Seq].map{ case ((bookID, bookProperties, bookStatus), authorName) => new BookListing(bookID, bookProperties, authorName, bookStatus) })
   }
   
-  def searchBooks(searchTerms : Seq[String], sort : BookSearchSort) : UnitOfWork[Seq[SearchResult[BookListing]]] =
+  def searchBooks(searchTerms : Seq[String], sort : BookSearchSort) : DbUnitOfWork[Seq[SearchResult[BookListing]]] =
     UnitOfWork {
       DBIO.sequence(for(searchTerm <- searchTerms) yield searchBooksByTerm(searchTerm)).map { resultSets =>
         val allBooks = resultSets.flatten.groupBy(_.bookID).mapValues(_.head).values
@@ -134,7 +136,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       }
     }
   
-  def searchBooks(query : AdvancedBookSearchQuery, sort : BookSearchSort) : UnitOfWork[Seq[SearchResult[BookListing]]] =
+  def searchBooks(query : AdvancedBookSearchQuery, sort : BookSearchSort) : DbUnitOfWork[Seq[SearchResult[BookListing]]] =
     UnitOfWork {
       val isbnQuery = ISBN.tryParseAndConvert(query.isbn).asOption.map(_.toString).getOrElse(query.isbn.replace("""\s+""", "").replace("-", ""))
       (for {
@@ -145,7 +147,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       } yield (book, authorName.name)).result.map(_.to[Seq].map{ case ((bookID, bookProperties, bookStatus), authorName) => new SearchResult(1.0f, new BookListing(bookID, bookProperties, authorName, bookStatus)) }.sort(sort))
     }
   
-  def createBookLoan(bookID : BookID, loan : LoanBookDTO) : UnitOfWork[BookLoanID] =
+  def createBookLoan(bookID : BookID, loan : LoanBookDTO) : DbUnitOfWork[BookLoanID] =
     UnitOfWork {
       val fields = (bookID, loan.memberID, loan.loanedDate, loan.dueDate)
       (bookLoans.map(l => (l.bookID, l.memberID, l.loanedDate, l.dueDate))
@@ -154,7 +156,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       ) += fields
     }
   
-  def getBookLoans(bookID : BookID) : UnitOfWork[Seq[BookLoan]] =
+  def getBookLoans(bookID : BookID) : DbUnitOfWork[Seq[BookLoan]] =
     UnitOfWork {
     (for {
       loan <- bookLoans if loan.bookID === bookID
@@ -166,18 +168,18 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
     }.to[Seq].sortBy(_.loanedDate).reverse)
   }
   
-  def getLibraryMemberLoans(libraryMemberID : LibraryMemberID) : UnitOfWork[Seq[BookLoan]] =
+  def getLibraryMemberLoans(libraryMemberID : LibraryMemberID) : DbUnitOfWork[Seq[BookLoan]] =
     UnitOfWork {
       (bookLoans.filter(_.memberID === libraryMemberID) join libraryMembers on (_.memberID === _.id) join personNames on (_._2.nameID === _.id)).result }.map(
         _.to[Seq].map(fields => new BookLoan(fields._1._1._1, fields._1._1._2, new LibraryMember(fields._1._1._3, fields._2._2, fields._1._2._3), fields._1._1._4, fields._1._1._5, fields._1._1._6)).sortBy(_.loanedDate).reverse
     )
   
-  def setReturnedDate(bookLoanID : BookLoanID, returnedDate : LocalDate) : UnitOfWork[Unit] =
+  def setReturnedDate(bookLoanID : BookLoanID, returnedDate : LocalDate) : DbUnitOfWork[Unit] =
     UnitOfWork {
       bookLoans.filter(_.id === bookLoanID).map(_.returnedDate).update(Some(returnedDate)).map(_ => ())
     }
   
-  def getBookByCallNumber(callNumber : CallNumber) : UnitOfWork[Option[Book]] =
+  def getBookByCallNumber(callNumber : CallNumber) : DbUnitOfWork[Option[Book]] =
     UnitOfWork {
       (for {
         book <- books if book.callNumber === callNumber
@@ -196,7 +198,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
         into ((fields, id) => id)
     ) += name.fields
   
-  def createLibraryMember(libraryMember : EditLibraryMemberDTO) : UnitOfWork[LibraryMemberID] =
+  def createLibraryMember(libraryMember : EditLibraryMemberDTO) : DbUnitOfWork[LibraryMemberID] =
     UnitOfWork {
       insertPersonName(libraryMember.name).flatMap{ nameID =>
         val memberColumns = (nameID, libraryMember.joinedDate)
@@ -207,7 +209,7 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       }
     }
   
-  def createAuthor(name : PersonName) : UnitOfWork[AuthorID] =
+  def createAuthor(name : PersonName) : DbUnitOfWork[AuthorID] =
     UnitOfWork {
       insertPersonName(name).flatMap{ nameID =>
         (authors.map(a => (a.nameID))
@@ -217,11 +219,11 @@ class DbRepository @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext)
       }
     }
   
-  def getAuthors() : UnitOfWork[Seq[Author]] =
+  def getAuthors() : DbUnitOfWork[Seq[Author]] =
     UnitOfWork {
       (for {
         author <- authors
         name <- author.name
-      } yield (author.id, name.name)).result.map(_.map{ case (authorID, name) => new Author(authorID, name) }.to[Seq])
+      } yield (author.id, name.name)).result.map(_.map{ case (authorID, name) => new Author(authorID, name) }.sortBy(_.name.firstName).to[Seq])
     }
 }

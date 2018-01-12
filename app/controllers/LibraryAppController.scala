@@ -11,7 +11,6 @@ import java.time._
 import java.util.Date
 import scala.collection.immutable.Seq
 import play.api.libs.json._
-import database.DbAuthenticationProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -23,7 +22,7 @@ import scala.concurrent.{ExecutionContext, Future}
  * Objects that the controller uses to interact with the business and authentication APIs are provided through injection.
  */
 @Singleton
-class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : LibraryAppBusinessLayerFacade, authenticationProvider : DbAuthenticationProvider, authenticatedAction : AuthenticatedAction)(implicit ec: ExecutionContext) extends AbstractController(cc) with I18nSupport {
+class LibraryAppController @Inject()(cc: ControllerComponents, businessApi : LibraryAppBusinessLayerFacade, authenticationProvider : AuthenticationProvider, authenticatedAction : AuthenticatedAction)(implicit ec: ExecutionContext) extends AbstractController(cc) with I18nSupport {
   import Forms._
   import Security._
   

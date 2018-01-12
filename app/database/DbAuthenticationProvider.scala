@@ -10,7 +10,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Singleton
-class DbAuthenticationProvider @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext) {
+class DbAuthenticationProvider @Inject() (dbSchema: DbSchema)(implicit ec: ExecutionContext) extends AuthenticationProvider {
   import dbSchema.dbConfig._
   import profile.api._
   import dbSchema._

@@ -13,7 +13,7 @@ import java.time.LocalDate
  * data integrity even if concurrent operations to the repository are made.  Business operations are performed asynchronously, and thus always return
  * `Future` objects, which can be used to schedule callbacks to retrieve the operation's result when finished.
  */
-class LibraryAppBusinessLayerFacade @Inject()(repository: DbRepository) {
+class LibraryAppBusinessLayerFacade @Inject()(repository: Repository) {
   def registerPublisher(name : String) : Future[PublisherID] =
     repository.createPublisher(name).execute()
     
